@@ -7690,6 +7690,14 @@ div[id*="mic-access-tool-box"] button[class*="reset"] * {
 ._access-icon {
   display: flex !important;
 }
+
+.services-faq-section .services-faq-content-col {
+  max-height: none !important;
+  overflow: visible !important;
+  opacity: 1 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
 /* mobile-submenu-overflow-fix */
 @media (max-width: 768px) {
   .navbar .sub-menu.mobile-expanded,
