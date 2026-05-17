@@ -7,33 +7,33 @@
 ## Pages
 
 ### בית
-https://example.com
+https://pedicurist-shikumi.zappy5.app
 פדיקור שיקומי מקצועי לבריאות הרגל — טיפול בציפורניים, יבלות, עקב סדוק וסוכרתיים. תוצאות אמיתיות, גישה קלינית, ותור שמחכה לך עכשיו.
 
 ### שירותים
-https://example.com/services
+https://pedicurist-shikumi.zappy5.app/services
 גלה את מגוון הטיפולים השיקומיים: ציפורניים לאחר ניתוח, פדיקור לסוכרתיים, הסרת יבלות וקרניות. טיפול מותאם אישית שמשלב רפואה ומגע מרפא.
 
 ### אודות
-https://example.com/about
+https://pedicurist-shikumi.zappy5.app/about
 פדיקוריסט שיקומי מוסמך עם ניסיון קליני עשיר, המשלב ידע רפואי עם יחס אישי חם. כי כל רגל היא סיפור אחר — ואנחנו כאן להקשיב ולרפא.
 
 ### צור קשר
-https://example.com/contact
+https://pedicurist-shikumi.zappy5.app/contact
 רוצה פדיקור שיקומי עד הבית או בפתח תקווה? צור קשר עכשיו ונתאים לך תור נוח. שירות אישי, מהיר ומקצועי — כי הרגליים שלך לא יכולות לחכות.
 
 ## Legal & Policy
 
 ### Privacy Policy
-https://example.com/privacy
+https://pedicurist-shikumi.zappy5.app/privacy
 Information about how user data is collected, stored, and protected.
 
 ### Terms & Conditions
-https://example.com/terms
+https://pedicurist-shikumi.zappy5.app/terms
 Legal terms describing service usage, rights, and policies.
 
 ### Accessibility Statement
-https://example.com/accessibility
+https://pedicurist-shikumi.zappy5.app/accessibility
 Information about WCAG compliance and accessibility features.
 
 ---
@@ -43,8 +43,8 @@ Information about WCAG compliance and accessibility features.
 - (No contact details configured yet.)
 
 ### Contact form
-- URL: https://example.com/contact
-- Endpoint: https://example.com/api/email/contact-form
+- URL: https://pedicurist-shikumi.zappy5.app/contact
+- Endpoint: https://pedicurist-shikumi.zappy5.app/api/email/contact-form
 - Method: POST
 - Content-Type: application/json
 - Fields:
@@ -77,6 +77,6 @@ A rehabilitative pedicure business focused on therapeutic and medical foot care.
 
 # Machine-readable feeds
 
-- Sitemap (XML): https://example.com/sitemap.xml
-- Robots: https://example.com/robots.txt
-- Flattened page text (for LLMs): https://example.com/llms-full.txt
+- Sitemap (XML): https://pedicurist-shikumi.zappy5.app/sitemap.xml
+- Robots: https://pedicurist-shikumi.zappy5.app/robots.txt
+- Flattened page text (for LLMs): https://pedicurist-shikumi.zappy5.app/llms-full.txt
