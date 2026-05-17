@@ -22,6 +22,10 @@ https://moshe-pedicure.com/about
 https://moshe-pedicure.com/contact
 רוצה פדיקור שיקומי עד הבית או בפתח תקווה? צור קשר עכשיו ונתאים לך תור נוח. שירות אישי, מהיר ומקצועי — כי הרגליים שלך לא יכולות לחכות.
 
+### תכשירים ומכשירים
+https://moshe-pedicure.com/products-and-devices
+משה - פדיקוריסט שיקומי  - תכשירים ומכשירים
+
 ## Legal & Policy
 
 ### Privacy Policy
@@ -54,7 +58,7 @@ Information about WCAG compliance and accessibility features.
   - `name` (text, required)
   - `email` (email, required)
   - `phone` (tel)
-  - `message` (textarea)
+  - `message` (textarea, required)
   - `privacy_consent` (checkbox, required)
 
 ---

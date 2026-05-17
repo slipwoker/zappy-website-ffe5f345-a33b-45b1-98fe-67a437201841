@@ -1,0 +1,3374 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>תכשירים ומכשירים</title>
+    <meta name="description" content="משה - פדיקוריסט שיקומי  - תכשירים ומכשירים">
+    <meta name="keywords" content="">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Zappy Analytics -->
+<script>
+(function() {
+  'use strict';
+  
+  // Configuration
+  var config = {
+    websiteId: 'ffe5f345-a33b-45b1-98fe-67a437201841',
+    apiUrl: 'https://api.zappy5.com/api/analytics/track',
+    sessionDuration: 30 * 60 * 1000, // 30 minutes
+    visitorDuration: 30 * 24 * 60 * 60 * 1000, // 30 days
+    trackPageViews: true,
+    trackClicks: true,
+    trackFormSubmissions: true
+  };
+  
+  // Generate or retrieve persistent visitor ID (30 days)
+  function getVisitorId() {
+    var visitorKey = 'zappy_visitor_' + config.websiteId;
+    var visitor = null;
+    
+    try {
+      visitor = localStorage.getItem(visitorKey);
+      if (visitor) {
+        var visitorData = JSON.parse(visitor);
+        var now = Date.now();
+        
+        // Check if visitor ID is still valid (30 days)
+        if (now - visitorData.created < config.visitorDuration) {
+          // Update last seen timestamp
+          visitorData.lastSeen = now;
+          localStorage.setItem(visitorKey, JSON.stringify(visitorData));
+          return visitorData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: LocalStorage not available');
+    }
+    
+    // Generate new visitor ID
+    var newVisitorId = 'zv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      localStorage.setItem(visitorKey, JSON.stringify({
+        id: newVisitorId,
+        created: Date.now(),
+        lastSeen: Date.now()
+      }));
+    } catch (e) {
+      // Continue without local storage
+    }
+    
+    return newVisitorId;
+  }
+  
+  // Generate or retrieve session ID (30 minutes)
+  function getSessionId() {
+    var sessionKey = 'zappy_session_' + config.websiteId;
+    var session = null;
+    
+    try {
+      session = sessionStorage.getItem(sessionKey);
+      if (session) {
+        var sessionData = JSON.parse(session);
+        var now = Date.now();
+        
+        // Check if session is still valid
+        if (now - sessionData.timestamp < config.sessionDuration) {
+          // Update timestamp
+          sessionData.timestamp = now;
+          sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
+          return sessionData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: SessionStorage not available');
+    }
+    
+    // Generate new session ID
+    var newSessionId = 'zs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+        id: newSessionId,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      // Continue without session storage
+    }
+    
+    return newSessionId;
+  }
+  
+  var visitorId = getVisitorId();
+  var sessionId = getSessionId();
+  
+  // Track an event
+  function trackEvent(eventType, data) {
+    data = data || {};
+    
+    var eventData = {
+      website_id: config.websiteId,
+      event_type: eventType,
+      page_path: window.location.pathname,
+      referrer: document.referrer || 'direct',
+      visitor_id: visitorId,
+      session_id: sessionId,
+      metadata: data
+    };
+    
+    // Use sendBeacon if available (better for page unload events)
+    if (navigator.sendBeacon) {
+      var blob = new Blob([JSON.stringify(eventData)], { type: 'application/json' });
+      navigator.sendBeacon(config.apiUrl, blob);
+    } else {
+      // Fallback to fetch
+      fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData),
+        keepalive: true
+      }).catch(function(error) {
+        console.warn('Zappy Analytics: Failed to track event', error);
+      });
+    }
+  }
+  
+  // Track page view
+  if (config.trackPageViews) {
+    trackEvent('pageview', {
+      title: document.title,
+      url: window.location.href
+    });
+  }
+  
+  // Track clicks on important elements
+  if (config.trackClicks) {
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      
+      // Track button clicks (counted as actions)
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        var button = target.tagName === 'BUTTON' ? target : target.closest('button');
+        trackEvent('click', {
+          element: 'button',
+          text: button.textContent.trim().substring(0, 100),
+          id: button.id || null,
+          class: button.className || null
+        });
+      }
+      
+      // Track link clicks (navigation - not counted as actions)
+      else if (target.tagName === 'A' || target.closest('a')) {
+        var link = target.tagName === 'A' ? target : target.closest('a');
+        trackEvent('navigation', {
+          element: 'link',
+          text: link.textContent.trim().substring(0, 100),
+          href: link.href,
+          external: link.hostname !== window.location.hostname
+        });
+      }
+    }, true);
+  }
+  
+  // Track form submissions
+  if (config.trackFormSubmissions) {
+    document.addEventListener('submit', function(e) {
+      var form = e.target;
+      
+      trackEvent('form_submit', {
+        form_id: form.id || null,
+        form_name: form.name || null,
+        form_action: form.action || null,
+        form_method: form.method || 'GET'
+      });
+    }, true);
+  }
+  
+  // Track time on page (send on page unload)
+  var pageLoadTime = Date.now();
+  
+  window.addEventListener('beforeunload', function() {
+    var timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000); // in seconds
+    
+    trackEvent('page_unload', {
+      time_on_page: timeOnPage,
+      page_path: window.location.pathname
+    });
+  });
+  
+  // Expose tracking function globally for custom events
+  window.zappyAnalytics = {
+    track: trackEvent,
+    getVisitorId: function() { return visitorId; },
+    getSessionId: function() { return sessionId; }
+  };
+  
+})();
+</script>
+<!-- End Zappy Analytics -->
+    <meta property="og:title" content="תכשירים ומכשירים">
+    <meta property="og:description" content="משה - פדיקוריסט שיקומי  - תכשירים ומכשירים">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="תכשירים ומכשירים">
+    <meta name="twitter:description" content="משה - פדיקוריסט שיקומי  - תכשירים ומכשירים">
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LocalBusiness","@id":"https://moshe-pedicure.com#organization","name":"משה - פדיקוריסט שיקומי ","url":"https://moshe-pedicure.com","description":"A rehabilitative pedicure business focused on therapeutic and medical foot care. The brand likely combines clinical expertise with personal care, addressing foot health issues beyond cosmetic treatment — such as nail problems, calluses, diabetic foot care, or post-injury recovery. The business positions itself at the intersection of health, wellness, and professional foot therapy.","address":{"@type":"PostalAddress","streetAddress":"יאטקובסקי אחים 36, פתח תקווה, מרכז, 4965239, ישראל"},"contactPoint":[{"@type":"ContactPoint","contactType":"customer service","email":"lr12345@013net.net","telephone":"058-5553431"}]},{"@type":"WebSite","@id":"https://moshe-pedicure.com#website","url":"https://moshe-pedicure.com","name":"משה - פדיקוריסט שיקומי ","publisher":{"@id":"https://moshe-pedicure.com#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://moshe-pedicure.com"},{"@type":"ListItem","position":2,"name":"Products And Devices","item":"https://moshe-pedicure.com/products-and-devices"}]}]}</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .skip-link { position: absolute; transform: translateY(-200%); left: 0; top: 0; padding: 12px 18px; background: var(--bg-dark, #1a1a1a); color: var(--text-light, #fff); font-weight: 600; border-radius: 0 0 8px 0; z-index: 10000; }
+    .skip-link:focus { transform: none; outline: 2px solid var(--ring, #fff); outline-offset: 2px; }
+    :focus-visible { outline: 2px solid var(--ring, currentColor); outline-offset: 3px; }
+  </style>
+
+
+  
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Cookie Consent -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
+    <!-- Mickidum Accessibility Toolbar -->
+    <script src="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.js"></script>
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:url" content="https://moshe-pedicure.com/products-and-devices">
+    <meta property="og:type" content="article">
+    
+    
+    
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:alt" content="תכשירים ומכשירים">
+    <meta property="og:locale" content="en_US">
+    <!-- Twitter Card Meta Tags -->
+    
+    
+    
+    
+    <meta name="twitter:image:alt" content="תכשירים ומכשירים"><style id="zappy-ai-page-styles">.products-and-devices-hero-section {
+  direction: rtl;
+  background-color: #F3EBDD;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  padding: 140px 24px 80px;
+  position: relative;
+  overflow: visible;
+  font-family: 'Assistant', sans-serif;
+}
+
+.products-and-devices-hero-section .padh-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* ── GRID ── */
+.products-and-devices-hero-section .padh-grid {
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 48px;
+  align-items: center;
+  direction: rtl;
+}
+
+/* ── TEXT CARD ── */
+.products-and-devices-hero-section .padh-text-card {
+  background: rgba(255, 252, 247, 0.88);
+  backdrop-filter: blur(8px);
+  border-radius: 28px;
+  border: 1.5px solid var(--accent);
+  box-shadow: 0 8px 32px rgba(90, 80, 60, 0.10);
+  padding: 44px 40px 40px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Leaf ornament */
+.products-and-devices-hero-section .padh-leaf-ornament {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+  pointer-events: none;
+}
+
+/* Label */
+.products-and-devices-hero-section .padh-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-align: right;
+  margin-bottom: 14px;
+  font-family: 'Assistant', sans-serif;
+}
+
+/* H1 */
+.products-and-devices-hero-section .padh-h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-dark);
+  text-align: right;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.01em;
+}
+
+/* Separator line */
+.products-and-devices-hero-section .padh-separator {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+  pointer-events: none;
+}
+
+/* Subtitle H3 */
+.products-and-devices-hero-section .padh-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--primary);
+  text-align: right;
+  margin: 0 0 16px 0;
+}
+
+/* Description paragraph */
+.products-and-devices-hero-section .padh-description {
+  font-family: 'Assistant', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  text-align: right;
+  margin: 0 0 32px 0;
+}
+
+/* CTA Row */
+.products-and-devices-hero-section .padh-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-end;
+  direction: rtl;
+}
+
+/* Primary button */
+.products-and-devices-hero-section .padh-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--secondary);
+  color: #FFFFFF;
+  padding: 14px 28px;
+  border-radius: 100px;
+  border: none;
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: 'Assistant', sans-serif;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(196, 106, 74, 0.28);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.products-and-devices-hero-section .padh-btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(196, 106, 74, 0.38);
+  background: #b35e41;
+}
+
+/* WhatsApp button */
+.products-and-devices-hero-section .padh-btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--primary);
+  padding: 13px 22px;
+  border-radius: 100px;
+  border: 2px solid var(--primary);
+  font-weight: 600;
+  font-size: 1rem;
+  font-family: 'Assistant', sans-serif;
+  text-decoration: none;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.products-and-devices-hero-section .padh-btn-whatsapp:hover {
+  background: var(--primary);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+/* Phone inline */
+.products-and-devices-hero-section .padh-phone-inline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.products-and-devices-hero-section .padh-phone-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'Assistant', sans-serif;
+  font-weight: 500;
+}
+
+.products-and-devices-hero-section .padh-phone-number {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-decoration: none;
+  font-family: 'Assistant', sans-serif;
+  letter-spacing: 0.03em;
+  direction: ltr;
+  display: inline-block;
+}
+
+.products-and-devices-hero-section .padh-phone-number:hover {
+  color: var(--secondary);
+}
+
+/* ── IMAGE COLUMN ── */
+.products-and-devices-hero-section .padh-image-col {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Background blob behind image */
+.products-and-devices-hero-section .padh-image-bg-blob {
+  position: absolute;
+  inset-inline-end: -20px;
+  top: 20px;
+  width: 85%;
+  height: 90%;
+  background: linear-gradient(135deg, rgba(122, 139, 90, 0.12) 0%, rgba(184, 154, 99, 0.10) 100%);
+  border-radius: 32px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Image wrapper */
+.products-and-devices-hero-section .padh-image-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+/* Main image */
+.products-and-devices-hero-section .padh-main-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(90, 80, 60, 0.18);
+}
+
+/* Foot badge decoration */
+.products-and-devices-hero-section .padh-foot-badge {
+  position: absolute;
+  bottom: -16px;
+  inset-inline-start: -16px;
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 252, 247, 0.95);
+  border-radius: 50%;
+  border: 1.5px solid var(--border-light);
+  box-shadow: 0 4px 16px rgba(90, 80, 60, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .products-and-devices-hero-section .padh-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .products-and-devices-hero-section .padh-image-col {
+    order: -1;
+  }
+
+  .products-and-devices-hero-section .padh-image-bg-blob {
+    display: none;
+  }
+
+  .products-and-devices-hero-section .padh-foot-badge {
+    bottom: -12px;
+    inset-inline-start: -12px;
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (max-width: 768px) {
+  .products-and-devices-hero-section {
+    padding: 100px 16px 60px;
+  }
+
+  .products-and-devices-hero-section .padh-text-card {
+    padding: 28px 22px 28px;
+    border-radius: 20px;
+  }
+
+  .products-and-devices-hero-section .padh-h1 {
+    font-size: 2.1rem;
+  }
+
+  .products-and-devices-hero-section .padh-subtitle {
+    font-size: 1.15rem;
+  }
+
+  .products-and-devices-hero-section .padh-cta-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .products-and-devices-hero-section .padh-btn-primary,
+  .products-and-devices-hero-section .padh-btn-whatsapp {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .products-and-devices-hero-section .padh-phone-inline {
+    align-items: center;
+  }
+
+  .products-and-devices-hero-section .padh-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+/* ZAPPY_POSTGEN_GUARD_HERO_FONT_CAP:products-and-devices-hero */
+.hero h1, .hero-section h1, [class*="hero-"] h1, [class~="hero"] h1, .hero .hero-title, .hero-title { font-size: min(var(--display-xl, 6rem), 6rem) !important; line-height: var(--leading-display, 1.05); }
+@media (max-width: 768px) {
+  .hero h1, .hero-section h1, [class*="hero-"] h1, [class~="hero"] h1, .hero .hero-title, .hero-title { font-size: clamp(2rem, 9vw, 3rem) !important; }
+}
+
+
+.products-and-devices-intro-section {
+  background-color: #F3EBDD;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  padding: 140px 24px 80px;
+  position: relative;
+  overflow: visible;
+  direction: rtl;
+  font-family: 'Assistant', sans-serif;
+}
+
+/* ── Container ── */
+.products-and-devices-intro-section .padi-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header ── */
+.products-and-devices-intro-section .padi-header {
+  text-align: center;
+  margin-block-end: 56px;
+}
+
+.products-and-devices-intro-section .padi-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin-block-end: 16px;
+  max-width: none !important;
+}
+
+.products-and-devices-intro-section .padi-title-rule {
+  width: 60px;
+  height: 1.5px;
+  background-color: #C8A96E;
+  opacity: 0.5;
+  margin: 0 auto 20px;
+  border-radius: 2px;
+}
+
+.products-and-devices-intro-section .padi-subtitle {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ── Two-Column Grid ── */
+.products-and-devices-intro-section .padi-content-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 48px;
+  align-items: start;
+  direction: rtl;
+}
+
+/* ── Image Column ── */
+.products-and-devices-intro-section .padi-image-col {
+  position: relative;
+}
+
+.products-and-devices-intro-section .padi-image-figure {
+  margin: 0;
+  padding: 0;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(90,80,60,0.12);
+  line-height: 0;
+}
+
+.products-and-devices-intro-section .padi-image-figure img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+  border-radius: 24px;
+  transition: transform 0.4s ease;
+}
+
+.products-and-devices-intro-section .padi-image-figure:hover img {
+  transform: scale(1.02);
+}
+
+/* ── Content Column ── */
+.products-and-devices-intro-section .padi-content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-block-start: 8px;
+}
+
+/* ── Text Blocks ── */
+.products-and-devices-intro-section .padi-text-block {
+  background: rgba(255,255,255,0.72);
+  border-radius: 16px;
+  border: 1px solid #E2D9CC;
+  padding: 24px 28px;
+  box-shadow: 0 4px 24px rgba(90,80,60,0.08);
+}
+
+.products-and-devices-intro-section .padi-block-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin-block-end: 10px;
+  text-align: right;
+}
+
+.products-and-devices-intro-section .padi-block-body {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  text-align: right;
+  margin: 0;
+}
+
+/* ── Highlights Strip ── */
+.products-and-devices-intro-section .padi-highlights {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+  background: rgba(255,255,255,0.55);
+  border-radius: 50px;
+  border: 1px solid #DDD1BF;
+  padding: 14px 24px;
+  box-shadow: 0 2px 12px rgba(90,80,60,0.06);
+  flex-wrap: nowrap;
+}
+
+.products-and-devices-intro-section .padi-highlight-item {
+  flex: 1;
+  text-align: center;
+}
+
+.products-and-devices-intro-section .padi-highlight-text {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.products-and-devices-intro-section .padi-highlight-divider {
+  width: 1px;
+  height: 22px;
+  background-color: #C8A96E;
+  opacity: 0.55;
+  flex-shrink: 0;
+  margin-inline: 4px;
+}
+
+/* ── Leaf Ornament ── */
+.products-and-devices-intro-section .padi-leaf-ornament {
+  display: flex;
+  justify-content: center;
+  margin-block-start: 56px;
+  pointer-events: none;
+  aria-hidden: true;
+}
+
+/* ── Responsive: Mobile ── */
+@media (max-width: 768px) {
+  .products-and-devices-intro-section {
+    padding: 100px 16px 60px;
+  }
+
+  .products-and-devices-intro-section .padi-header {
+    margin-block-end: 36px;
+  }
+
+  .products-and-devices-intro-section .padi-title {
+    font-size: 1.6rem;
+  }
+
+  .products-and-devices-intro-section .padi-content-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .products-and-devices-intro-section .padi-image-figure img {
+    height: 260px;
+  }
+
+  .products-and-devices-intro-section .padi-content-col {
+    gap: 20px;
+    padding-block-start: 0;
+  }
+
+  .products-and-devices-intro-section .padi-text-block {
+    padding: 18px 20px;
+  }
+
+  .products-and-devices-intro-section .padi-highlights {
+    flex-direction: column;
+    border-radius: 16px;
+    gap: 10px;
+    padding: 16px 20px;
+    align-items: flex-end;
+  }
+
+  .products-and-devices-intro-section .padi-highlight-divider {
+    width: 40px;
+    height: 1px;
+    margin-inline: 0;
+    margin-block: 0;
+  }
+
+  .products-and-devices-intro-section .padi-highlight-item {
+    text-align: right;
+  }
+
+  .products-and-devices-intro-section .padi-leaf-ornament {
+    margin-block-start: 36px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .products-and-devices-intro-section .padi-content-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .products-and-devices-intro-section .padi-image-figure img {
+    height: 340px;
+  }
+}
+
+.products-and-devices-services-section {
+  position: relative;
+  background-color: #F3EBDD;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  padding: 80px 0 72px;
+  overflow: visible;
+  direction: rtl;
+  font-family: 'Assistant', sans-serif;
+}
+
+/* ── Decorative corner motifs ── */
+.products-and-devices-services-section .pad-corner-motif {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  width: 180px;
+  height: 180px;
+}
+.products-and-devices-services-section .pad-corner-tr {
+  top: 0;
+  inset-inline-end: 0;
+}
+.products-and-devices-services-section .pad-corner-bl {
+  bottom: 0;
+  inset-inline-start: 0;
+}
+
+/* ── Container ── */
+.products-and-devices-services-section .pad-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Section Header ── */
+.products-and-devices-services-section .pad-section-header {
+  text-align: right;
+  margin-bottom: 56px;
+  max-width: 680px;
+}
+.products-and-devices-services-section .pad-main-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin: 0 0 14px;
+}
+.products-and-devices-services-section .pad-accent-rule {
+  width: 60px;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.7;
+  margin: 0 0 18px;
+  border-radius: 2px;
+}
+.products-and-devices-services-section .pad-main-desc {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ── Sub-section wrapper ── */
+.products-and-devices-services-section .pad-subsection {
+  margin-bottom: 64px;
+}
+.products-and-devices-services-section .pad-subsection:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Sub-section title row ── */
+.products-and-devices-services-section .pad-subsection-title-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+.products-and-devices-services-section .pad-subsection-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  white-space: nowrap;
+  margin: 0;
+}
+.products-and-devices-services-section .pad-subsection-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.45;
+  border-radius: 1px;
+}
+.products-and-devices-services-section .pad-subsection-intro {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0 0 28px;
+  max-width: 600px;
+  text-align: right;
+}
+
+/* ══════════════════════════════════════════════════
+   SERVICE CARDS GRID (3 columns)
+══════════════════════════════════════════════════ */
+.products-and-devices-services-section .pad-services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  direction: rtl;
+}
+.products-and-devices-services-section .pad-service-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(90,80,60,0.10);
+  padding: 1.5rem;
+  border: 1px solid #F0EAE0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.products-and-devices-services-section .pad-service-card:hover {
+  box-shadow: 0 8px 32px rgba(90,80,60,0.15);
+  transform: translateY(-3px);
+}
+.products-and-devices-services-section .pad-service-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #F0EAE0 0%, #E8D5B0 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+.products-and-devices-services-section .pad-service-content {
+  flex: 1;
+}
+.products-and-devices-services-section .pad-service-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin: 0 0 8px;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-service-desc {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+  text-align: right;
+}
+
+/* ══════════════════════════════════════════════════
+   PRODUCT CARDS GRID (3 columns)
+══════════════════════════════════════════════════ */
+.products-and-devices-services-section .pad-products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  direction: rtl;
+}
+.products-and-devices-services-section .pad-product-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(90,80,60,0.10);
+  border: 1px solid #F0EAE0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.products-and-devices-services-section .pad-product-card:hover {
+  box-shadow: 0 8px 32px rgba(90,80,60,0.15);
+  transform: translateY(-3px);
+}
+.products-and-devices-services-section .pad-product-img-wrap {
+  width: 100%;
+  aspect-ratio: 400 / 260;
+  overflow: hidden;
+  background: #F5F0E8;
+  flex-shrink: 0;
+}
+.products-and-devices-services-section .pad-product-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.products-and-devices-services-section .pad-product-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-product-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin: 0;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-product-desc {
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-product-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+.products-and-devices-services-section .pad-product-meta-item {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-meta-label {
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-inline-end: 4px;
+}
+.products-and-devices-services-section .pad-product-price {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 4px;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-product-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 11px 22px;
+  border-radius: 50px;
+  background: transparent;
+  color: var(--secondary);
+  border: 2px solid var(--secondary);
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.22s ease, color 0.22s ease;
+  text-align: center;
+}
+.products-and-devices-services-section .pad-product-btn:hover {
+  background: var(--secondary);
+  color: #FFFFFF;
+}
+
+/* ══════════════════════════════════════════════════
+   DEVICE CARDS GRID (2 columns)
+══════════════════════════════════════════════════ */
+.products-and-devices-services-section .pad-devices-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+  direction: rtl;
+}
+.products-and-devices-services-section .pad-device-card {
+  background: #FAF7F2;
+  border: 1px solid #E2D9CC;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.products-and-devices-services-section .pad-device-card:hover {
+  box-shadow: 0 8px 32px rgba(90,80,60,0.12);
+  transform: translateY(-3px);
+}
+.products-and-devices-services-section .pad-device-inner {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: flex-start;
+}
+.products-and-devices-services-section .pad-device-img-col {
+  flex-shrink: 0;
+}
+.products-and-devices-services-section .pad-device-img-wrap {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, #F0EAE0 0%, #E8D5B0 100%);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+.products-and-devices-services-section .pad-device-placeholder-icon {
+  display: block;
+}
+.products-and-devices-services-section .pad-device-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-device-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin: 0;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-device-use,
+.products-and-devices-services-section .pad-device-audience {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-device-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.products-and-devices-services-section .pad-device-benefits li {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  text-align: right;
+}
+.products-and-devices-services-section .pad-device-benefits li::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+  order: 1;
+}
+.products-and-devices-services-section .pad-device-benefits li {
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.products-and-devices-services-section .pad-device-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.products-and-devices-services-section .pad-device-price {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+.products-and-devices-services-section .pad-device-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 50px;
+  background: var(--secondary);
+  color: #FFFFFF;
+  border: none;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.22s ease, box-shadow 0.22s ease;
+}
+.products-and-devices-services-section .pad-device-btn:hover {
+  background: #a8573a;
+  box-shadow: 0 4px 16px rgba(196,106,74,0.3);
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — TABLET
+══════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .products-and-devices-services-section .pad-services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .products-and-devices-services-section .pad-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE — MOBILE
+══════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .products-and-devices-services-section {
+    padding: 48px 0 56px;
+  }
+  .products-and-devices-services-section .pad-container {
+    padding: 0 16px;
+  }
+  .products-and-devices-services-section .pad-corner-motif {
+    width: 100px;
+    height: 100px;
+  }
+  .products-and-devices-services-section .pad-section-header {
+    margin-bottom: 36px;
+  }
+  .products-and-devices-services-section .pad-main-title {
+    font-size: 1.65rem;
+  }
+  .products-and-devices-services-section .pad-subsection {
+    margin-bottom: 44px;
+  }
+  .products-and-devices-services-section .pad-services-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  .products-and-devices-services-section .pad-products-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+  .products-and-devices-services-section .pad-devices-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px;
+  }
+  .products-and-devices-services-section .pad-device-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .products-and-devices-services-section .pad-device-img-wrap {
+    width: 72px;
+    height: 72px;
+  }
+  .products-and-devices-services-section .pad-device-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .products-and-devices-services-section .pad-subsection-title-row {
+    gap: 12px;
+  }
+}
+/* ZAPPY_POSTGEN_GUARD_RTL_FLEX:תכשירים ומכשירים-services — fixed 1 row-reverse → row on li for RTL */
+
+
+.products-and-devices-benefits-section {
+  background-color: #F0EAE0;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  padding: 80px 24px 100px;
+  position: relative;
+  overflow: visible;
+  direction: rtl;
+}
+
+.products-and-devices-benefits-section .benefits-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Eyebrow ── */
+.products-and-devices-benefits-section .benefits-eyebrow {
+  display: inline-block;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--secondary);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* ── Top Grid ── */
+.products-and-devices-benefits-section .benefits-top-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  margin-bottom: 56px;
+  direction: rtl;
+}
+
+/* ── Intro ── */
+.products-and-devices-benefits-section .benefits-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: right;
+}
+
+.products-and-devices-benefits-section .benefits-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin: 0 0 16px;
+}
+
+.products-and-devices-benefits-section .benefits-rule-wrapper {
+  margin-bottom: 20px;
+}
+
+.products-and-devices-benefits-section .benefits-intro-text {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin: 0;
+  text-align: right;
+}
+
+/* ── Highlight Card ── */
+.products-and-devices-benefits-section .benefits-highlight-card {
+  background: #F5EFE5;
+  border: 1.5px solid var(--primary);
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 4px 24px rgba(90,80,60,0.10);
+  overflow: hidden;
+}
+
+.products-and-devices-benefits-section .highlight-card-inner {
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  text-align: right;
+}
+
+.products-and-devices-benefits-section .highlight-badge {
+  display: inline-block;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--primary);
+  background: rgba(122,139,90,0.12);
+  border: 1px solid rgba(122,139,90,0.3);
+  border-radius: 100px;
+  padding: 4px 14px;
+  text-transform: uppercase;
+}
+
+.products-and-devices-benefits-section .highlight-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.products-and-devices-benefits-section .highlight-desc {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.products-and-devices-benefits-section .highlight-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary);
+  background: transparent;
+  border: 2px solid var(--primary);
+  border-radius: 50px;
+  padding: 12px 24px;
+  text-decoration: none;
+  margin-top: 4px;
+  transition: background 0.25s ease, color 0.25s ease;
+  cursor: pointer;
+}
+
+.products-and-devices-benefits-section .highlight-cta:hover {
+  background: var(--primary);
+  color: var(--text-light);
+}
+
+/* ── Benefits Grid ── */
+.products-and-devices-benefits-section .benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  direction: rtl;
+}
+
+/* ── Benefit Card ── */
+.products-and-devices-benefits-section .benefit-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: right;
+  box-shadow: 0 4px 24px rgba(90,80,60,0.08);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  min-width: 0;
+}
+
+.products-and-devices-benefits-section .benefit-card:hover {
+  box-shadow: 0 8px 32px rgba(90,80,60,0.14);
+  transform: translateY(-3px);
+}
+
+.products-and-devices-benefits-section .benefit-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.55;
+  letter-spacing: -0.02em;
+  user-select: none;
+}
+
+.products-and-devices-benefits-section .benefit-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.products-and-devices-benefits-section .benefit-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.products-and-devices-benefits-section .benefit-desc {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── Tablet ── */
+@media (max-width: 1024px) {
+  .products-and-devices-benefits-section .benefits-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .products-and-devices-benefits-section {
+    padding: 60px 16px 80px;
+  }
+
+  .products-and-devices-benefits-section .benefits-top-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    margin-bottom: 36px;
+  }
+
+  .products-and-devices-benefits-section .benefits-heading {
+    font-size: 1.6rem;
+  }
+
+  .products-and-devices-benefits-section .benefits-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .products-and-devices-benefits-section .highlight-card-inner {
+    padding: 24px 20px;
+  }
+
+  .products-and-devices-benefits-section .benefit-card {
+    padding: 22px 18px;
+  }
+}
+
+.products-and-devices-testimonials-section {
+  position: relative;
+  background-color: var(--bg-dark);
+  background-image:
+    radial-gradient(ellipse at 15% 20%, rgba(122, 139, 90, 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 80%, rgba(184, 154, 99, 0.08) 0%, transparent 55%),
+    linear-gradient(180deg, #2B2926 0%, #221F1C 100%);
+  color: var(--text-light);
+  padding: 80px 16px 80px;
+  overflow: visible;
+  direction: rtl;
+}
+
+/* Subtle paper texture overlay */
+.products-and-devices-testimonials-section .pdt-texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  opacity: 0.5;
+}
+
+/* Container */
+.products-and-devices-testimonials-section .pdt-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Header */
+.products-and-devices-testimonials-section .pdt-header {
+  text-align: center;
+  margin-bottom: 52px;
+}
+
+/* Ornament */
+.products-and-devices-testimonials-section .pdt-ornament {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Tag line */
+.products-and-devices-testimonials-section .pdt-tagline {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+/* Title */
+.products-and-devices-testimonials-section .pdt-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-light);
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+/* Rule ornament */
+.products-and-devices-testimonials-section .pdt-rule {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Intro paragraph */
+.products-and-devices-testimonials-section .pdt-intro {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Grid */
+.products-and-devices-testimonials-section .pdt-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  direction: rtl;
+}
+
+@media (min-width: 768px) {
+  .products-and-devices-testimonials-section .pdt-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+}
+
+/* Card */
+.products-and-devices-testimonials-section .pdt-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-dark);
+  border-inline-start: 2px solid var(--accent);
+  border-radius: 16px;
+  padding: 36px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+  min-width: 0;
+}
+
+.products-and-devices-testimonials-section .pdt-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 8px 32px rgba(90, 80, 60, 0.22);
+}
+
+/* Large decorative quote mark */
+.products-and-devices-testimonials-section .pdt-quote-mark {
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 22px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.35;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Blockquote */
+.products-and-devices-testimonials-section .pdt-quote {
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.products-and-devices-testimonials-section .pdt-quote p {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-light);
+  text-align: right;
+  margin: 0;
+}
+
+/* Card footer */
+.products-and-devices-testimonials-section .pdt-card-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  border-top: 1px solid var(--border-dark);
+  padding-top: 16px;
+}
+
+/* Author name */
+.products-and-devices-testimonials-section .pdt-author-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.03em;
+}
+
+/* Author detail */
+.products-and-devices-testimonials-section .pdt-author-detail {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: end;
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+  .products-and-devices-testimonials-section {
+    padding: 60px 16px 60px;
+  }
+
+  .products-and-devices-testimonials-section .pdt-header {
+    margin-bottom: 36px;
+  }
+
+  .products-and-devices-testimonials-section .pdt-title {
+    font-size: 1.6rem;
+  }
+
+  .products-and-devices-testimonials-section .pdt-card {
+    padding: 28px 20px 20px;
+  }
+
+  .products-and-devices-testimonials-section .pdt-quote-mark {
+    font-size: 3rem;
+    top: 12px;
+    inset-inline-end: 16px;
+  }
+}
+
+.products-and-devices-faq-section {
+  position: relative;
+  background-color: #F3EBDD;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  padding: 80px 24px 80px;
+  overflow: visible;
+  direction: rtl;
+}
+
+/* Botanical corner decorations */
+.products-and-devices-faq-section .faq-botanical-corner {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  pointer-events: none;
+  z-index: 0;
+}
+.products-and-devices-faq-section .faq-botanical-corner--tr {
+  top: 0;
+  inset-inline-end: 0;
+}
+.products-and-devices-faq-section .faq-botanical-corner--bl {
+  bottom: 0;
+  inset-inline-start: 0;
+}
+
+/* Container */
+.products-and-devices-faq-section .faq-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Heading block */
+.products-and-devices-faq-section .faq-heading-block {
+  margin-bottom: 48px;
+  text-align: right;
+}
+.products-and-devices-faq-section .faq-main-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin: 0 0 14px 0;
+  text-align: right;
+}
+.products-and-devices-faq-section .faq-heading-rule {
+  width: 60px;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.55;
+  margin-inline-start: auto;
+  border-radius: 2px;
+}
+
+/* Two-column grid */
+.products-and-devices-faq-section .faq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+  direction: rtl;
+}
+
+/* FAQ Questions Column */
+.products-and-devices-faq-section .faq-questions-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.products-and-devices-faq-section .faq-item {
+  padding: 24px 0;
+}
+.products-and-devices-faq-section .faq-question {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin: 0 0 10px 0;
+  text-align: right;
+}
+.products-and-devices-faq-section .faq-answer {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0;
+  text-align: right;
+}
+.products-and-devices-faq-section .faq-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to left, var(--primary), transparent);
+  opacity: 0.3;
+  flex-shrink: 0;
+}
+
+/* CTA Card Column */
+.products-and-devices-faq-section .faq-cta-col {
+  position: sticky;
+  top: 100px;
+}
+.products-and-devices-faq-section .faq-cta-card {
+  background: #FFFFFF;
+  border: 2px solid var(--primary);
+  border-radius: 28px;
+  padding: 36px 32px 32px;
+  box-shadow: 0 8px 32px rgba(90,80,60,0.10);
+  text-align: right;
+  position: relative;
+  overflow: hidden;
+}
+.products-and-devices-faq-section .faq-cta-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle at top right, rgba(184,154,99,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* CTA ornament */
+.products-and-devices-faq-section .faq-cta-ornament {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+/* CTA title */
+.products-and-devices-faq-section .faq-cta-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin: 0 0 14px 0;
+  text-align: right;
+  position: relative;
+  z-index: 1;
+}
+
+/* CTA description */
+.products-and-devices-faq-section .faq-cta-desc {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0 0 24px 0;
+  text-align: right;
+  position: relative;
+  z-index: 1;
+}
+
+/* CTA list */
+.products-and-devices-faq-section .faq-cta-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+.products-and-devices-faq-section .faq-cta-list-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-dark);
+  text-align: right;
+}
+.products-and-devices-faq-section .faq-cta-list-item svg {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+/* CTA Button */
+.products-and-devices-faq-section .faq-cta-btn {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--secondary);
+  color: #FFFFFF;
+  font-family: 'Assistant', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.4;
+  padding: 16px 28px;
+  border-radius: 100px;
+  border: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.22s ease, box-shadow 0.22s ease, transform 0.18s ease;
+  box-shadow: 0 6px 24px rgba(196,106,74,0.25);
+  position: relative;
+  z-index: 1;
+  margin-bottom: 14px;
+}
+.products-and-devices-faq-section .faq-cta-btn:hover {
+  background: #b05a3a;
+  box-shadow: 0 10px 32px rgba(196,106,74,0.35);
+  transform: translateY(-2px);
+}
+.products-and-devices-faq-section .faq-cta-btn svg {
+  flex-shrink: 0;
+}
+
+/* CTA note */
+.products-and-devices-faq-section .faq-cta-note {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  text-align: center;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .products-and-devices-faq-section .faq-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .products-and-devices-faq-section .faq-cta-col {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .products-and-devices-faq-section {
+    padding: 60px 16px 60px;
+  }
+  .products-and-devices-faq-section .faq-botanical-corner {
+    width: 80px;
+    height: 80px;
+  }
+  .products-and-devices-faq-section .faq-heading-block {
+    margin-bottom: 32px;
+  }
+  .products-and-devices-faq-section .faq-main-title {
+    font-size: 1.7rem;
+  }
+  .products-and-devices-faq-section .faq-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px;
+  }
+  .products-and-devices-faq-section .faq-item {
+    padding: 18px 0;
+  }
+  .products-and-devices-faq-section .faq-cta-card {
+    padding: 28px 20px 24px;
+    border-radius: 20px;
+  }
+  .products-and-devices-faq-section .faq-cta-btn {
+    font-size: 1rem;
+    padding: 14px 20px;
+  }
+}</style>
+    <link rel="stylesheet" href="/styles.css">
+
+    <style id="zappy-dropdown-submenu-styles">
+      /* ========== DESKTOP DROPDOWN SUBMENU STYLES ========== */
+      /* Base styles for dropdown submenus - parent must be positioned */
+      .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { position: relative; }
+      /* Submenu base - hidden by default */
+      .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { display: block !important; position: absolute !important; top: 100%; left: 0; min-width: 220px; background: white; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); padding: 8px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.3s ease; z-index: 1000; list-style: none; pointer-events: none; }
+      /* CRITICAL: Desktop hover styles to show dropdown */
+      .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Submenu item styling */
+      .sub-menu li { list-style: none; margin: 0; padding: 0; }
+      .sub-menu a { display: block !important; padding: 10px 16px !important; color: var(--text-dark, #333) !important; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 0.2s; }
+      .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+      [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 10px !important; padding-right: 28px !important; }
+      .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+      .sub-menu a:hover { background-color: #f5f5f5; }
+      /* RTL (Hebrew/Arabic) dropdown positioning */
+      [dir="rtl"] .nav-menu .sub-menu, [dir="rtl"] nav .sub-menu, [dir="rtl"] .navbar .sub-menu, html[lang="he"] .nav-menu .sub-menu, html[lang="he"] nav .sub-menu, html[lang="he"] .navbar .sub-menu, html[lang="ar"] .nav-menu .sub-menu, html[lang="ar"] nav .sub-menu, html[lang="ar"] .navbar .sub-menu { left: auto !important; right: 0 !important; }
+      /* Hide empty dropdown menus (exclude catalog sub-menus that use <a> children instead of <li>) */
+      .sub-menu:empty, .sub-menu:not(:has(li:not(.zappy-hidden-menu-item))):not(:has(> a)), .sub-menu:not(:has(li)):not(:has(> a)) { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+      /* Desktop: show submenu on Menu Group hover */
+      li:has(.menu-group-title):hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Menu Group title styling */
+      .nav-menu > li > .menu-group-title, #navMenu > li > .menu-group-title { display: inline-block; padding: 0.5rem 1rem; cursor: default; user-select: none; }
+      
+      /* ========== MOBILE SUBMENU STYLES ========== */
+      @media (max-width: 768px) {
+        .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { position: static !important; transform: none !important; box-shadow: none !important; background: transparent !important; max-height: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; padding: 0 !important; border-radius: 0 !important; }
+        .navbar .sub-menu.mobile-expanded, .nav-menu .sub-menu.mobile-expanded, #navMenu .sub-menu.mobile-expanded { max-height: none !important; overflow-y: visible !important; opacity: 1 !important; visibility: visible !important; padding: 8px 0 8px 16px !important; }
+        [dir="rtl"] .sub-menu.mobile-expanded, html[lang="he"] .sub-menu.mobile-expanded { padding: 8px 16px 8px 0 !important; }
+        /* Disable hover behavior on mobile */
+        .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 0; visibility: hidden; pointer-events: none; }
+        .nav-menu li > .sub-menu.mobile-expanded, nav li > .sub-menu.mobile-expanded, .navbar li > .sub-menu.mobile-expanded, #navMenu li > .sub-menu.mobile-expanded { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+        .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; position: relative !important; min-height: 44px !important; }
+        .nav-menu li:has(.sub-menu) > a, nav li:has(.sub-menu) > a, .navbar li:has(.sub-menu) > a, #navMenu li:has(.sub-menu) > a { flex: 1 !important; min-width: 0 !important; }
+        .nav-menu li:has(.sub-menu) > .menu-group-title, nav li:has(.sub-menu) > .menu-group-title, .navbar li:has(.sub-menu) > .menu-group-title, #navMenu li:has(.sub-menu) > .menu-group-title { flex: 1 !important; min-width: 0 !important; padding: 0 !important; line-height: inherit !important; }
+        .nav-menu li:has(.sub-menu) > .sub-menu, nav li:has(.sub-menu) > .sub-menu, .navbar li:has(.sub-menu) > .sub-menu, #navMenu li:has(.sub-menu) > .sub-menu { flex-basis: 100% !important; width: 100% !important; }
+        .nav-menu li:has(.sub-menu) > a [class*="chevron"], .nav-menu li:has(.sub-menu) > a [class*="arrow"], .nav-menu li:has(.sub-menu) > a .fa-chevron-down, .nav-menu li:has(.sub-menu) > a .fa-angle-down, nav li:has(.sub-menu) > a [class*="chevron"], nav li:has(.sub-menu) > a [class*="arrow"], #navMenu li:has(.sub-menu) > a [class*="chevron"], #navMenu li:has(.sub-menu) > a [class*="arrow"] { display: none !important; visibility: hidden !important; }
+        .mobile-submenu-toggle { display: flex !important; align-items: center !important; justify-content: center !important; width: 44px !important; height: auto !important; background: transparent !important; border: none !important; cursor: pointer !important; color: var(--text-dark) !important; position: static !important; flex-shrink: 0 !important; align-self: stretch !important; z-index: 2 !important; padding: 0 !important; margin: 0 !important; }
+        .mobile-submenu-toggle::after { content: '' !important; width: 0 !important; height: 0 !important; border-left: 6px solid transparent !important; border-right: 6px solid transparent !important; border-top: 7px solid currentColor !important; transition: transform 0.3s ease !important; }
+        .mobile-submenu-toggle.expanded::after { transform: rotate(180deg) !important; }
+        .sub-menu a { padding: 10px 0 !important; display: block !important; color: var(--text-dark) !important; white-space: normal !important; }
+        .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+        [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 0 !important; padding-right: 28px !important; }
+        .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+        .nav-menu.active, #navMenu.active { max-width: 100vw !important; overflow-x: hidden !important; box-sizing: border-box !important; }
+        .navbar .sub-menu li a, nav.navbar .sub-menu li a, .zappy-products-dropdown .sub-menu a { color: var(--text-dark) !important; }
+      }
+      @media (min-width: 769px) { .mobile-submenu-toggle { display: none !important; } }
+    </style>
+
+    <style id="zappy-widget-visibility">
+      html[dir="rtl"] .whatsapp-float { right: 20px !important; left: auto !important; }
+      html[dir="ltr"] .whatsapp-float, html:not([dir]) .whatsapp-float { left: 20px !important; right: auto !important; }
+      html[dir="rtl"] #mic-access-tool-general-button, html[dir="rtl"] .mic-access-tool-general-button,
+      html[dir="rtl"] #mic-init-access-tool .mic-access-tool-general-button,
+      html[dir="rtl"] #mic-init-access-tool #mic-access-tool-general-button,
+      html[dir="rtl"] ._access-icon { left: 20px !important; right: auto !important; }
+      html[dir="ltr"] #mic-access-tool-general-button, html[dir="ltr"] .mic-access-tool-general-button,
+      html[dir="ltr"] #mic-init-access-tool .mic-access-tool-general-button,
+      html[dir="ltr"] #mic-init-access-tool #mic-access-tool-general-button,
+      html[dir="ltr"] ._access-icon,
+      html:not([dir]) #mic-access-tool-general-button, html:not([dir]) .mic-access-tool-general-button,
+      html:not([dir]) #mic-init-access-tool .mic-access-tool-general-button,
+      html:not([dir]) #mic-init-access-tool #mic-access-tool-general-button,
+      html:not([dir]) ._access-icon { right: 20px !important; left: auto !important; }
+      @media (max-width: 768px) { .whatsapp-float { display: flex !important; } }
+      @media (min-width: 769px) { .whatsapp-float { display: flex !important; } }
+      @media (max-width: 768px) {
+        #mic-access-tool-general-button, .mic-access-tool-general-button,
+        #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+        ._access-icon { display: flex !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; }
+        #mic-access-tool-box.opened-mic-access-tool, .mic-access-tool-box.opened-mic-access-tool,
+        #mic-init-access-tool #mic-access-tool-box.opened-mic-access-tool {
+          visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;
+        }
+      }
+      @media (min-width: 769px) {
+        #mic-access-tool-general-button, .mic-access-tool-general-button,
+        #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+        ._access-icon { display: flex !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; }
+        #mic-access-tool-box.opened-mic-access-tool, .mic-access-tool-box.opened-mic-access-tool,
+        #mic-init-access-tool #mic-access-tool-box.opened-mic-access-tool {
+          visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;
+        }
+      }
+    </style>
+</head>
+<body>
+<a class="skip-link" href="#main">דלג לתוכן הראשי</a>
+  <nav class="navbar" dir="rtl">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+    <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+    <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" style="display: none;">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </button>
+
+  <button class="phone-header-btn" data-phone="0585553431" aria-label="Call">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  </button>
+
+  <div class="nav-container">
+    <div class="nav-right-group"><div class="nav-brand">
+      <a href="/" class="logo-link"><img class="logo" src="/assets/site-------image-1.webp" alt="משה - פדיקוריסט שיקומי "></a>
+    </div><ul class="nav-menu" id="navMenu"><li><a href="/">בית</a></li><li><a href="/services">שירותים</a></li><li><a href="/about">אודות</a></li><li><a href="/products-and-devices" class="nav-link">תכשירים</a></li></ul></div>
+
+    
+
+    <div class="nav-cta-container">
+      <a href="/contact" class="nav-cta-btn">צור קשר</a>
+    </div>
+  </div>
+</nav>
+<script>
+
+// Navbar Mobile Menu Toggle and Contrast Fix
+(function() {
+  // Use 'load' event instead of 'DOMContentLoaded' to ensure we run AFTER all other scripts
+  window.addEventListener('load', function() {
+    
+    // FIX MOBILE BUTTON CONTRAST
+    // Detect navbar background color and apply contrasting color to mobile buttons
+    const navbar = document.querySelector('.navbar, nav, header');
+    if (!navbar) {
+      console.log('[Navbar] Navbar element not found');
+      return;
+    }
+    
+    // DECLARE VARIABLES EARLY to avoid Temporal Dead Zone errors
+    // These are used in multiple places below
+    let mobileToggle = document.getElementById('mobileToggle') ||
+                       document.querySelector('.mobile-toggle') ||
+                       document.querySelector('.hamburger') ||
+                       document.querySelector('.hamburger-menu') ||
+                       document.querySelector('.menu-toggle') ||
+                       document.querySelector('.burger-menu') ||
+                       document.querySelector('[aria-label="Menu"]') ||
+                       document.querySelector('[aria-label="תפריט"]');
+    
+    const phoneBtn = document.querySelector('.phone-header-btn');
+    
+    const computedStyle = window.getComputedStyle(navbar);
+    let bgColor = computedStyle.backgroundColor;
+    
+    console.log('[Navbar] Initial navbar background:', bgColor);
+    
+    // Check if background is transparent or rgba with 0 alpha
+    const isTransparent = bgColor === 'transparent' || 
+                         bgColor === 'rgba(0, 0, 0, 0)' ||
+                         (bgColor.startsWith('rgba') && bgColor.includes(', 0)'));
+    
+    if (isTransparent) {
+      // Check for background-image or gradient
+      const bgImage = computedStyle.backgroundImage;
+      if (bgImage && bgImage !== 'none') {
+        console.log('[Navbar] Navbar has background image/gradient, using dark text');
+        bgColor = 'rgb(240, 240, 240)'; // Assume light background
+      } else {
+        // Transparent navbar - check body background
+        const bodyBg = window.getComputedStyle(document.body).backgroundColor;
+        console.log('[Navbar] Navbar transparent, using body background:', bodyBg);
+        bgColor = bodyBg;
+      }
+    }
+    
+    // Calculate luminance to determine if background is light or dark
+    const rgb = bgColor.match(/\d+/g);
+    if (rgb && rgb.length >= 3) {
+      const r = parseInt(rgb[0]);
+      const g = parseInt(rgb[1]);
+      const b = parseInt(rgb[2]);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      
+      // Mobile button colors are set by Claude's AI-generated CSS (same as .nav-menu a)
+      // No dynamic color overrides needed - colors come from the generated navbar CSS
+      console.log('[Navbar] Mobile button colors preserved from Claude CSS (luminance:', luminance.toFixed(2) + ')');
+      
+      // FIX ICON SIZES - Ensure SVGs are properly sized and visible
+      // INJECT CRITICAL CSS TO OVERRIDE ANY CONFLICTING RULES
+      const criticalCSS = document.createElement('style');
+      criticalCSS.id = 'zappy-mobile-nav-fix';
+      const htmlLang = document.documentElement.lang || 'en';
+      const htmlDir = document.documentElement.dir || 'ltr';
+      // Check both dir attribute AND lang for RTL detection
+      // dir="rtl" is the most reliable indicator
+      const isRTL = htmlDir === 'rtl' || htmlLang === 'he' || htmlLang === 'ar';
+      
+      criticalCSS.textContent = `
+        /* Hide mobile buttons on desktop, show only on mobile */
+        @media (min-width: 769px) {
+          .mobile-toggle,
+          .phone-header-btn {
+            display: none !important;
+          }
+        }
+        
+        /* Show and position mobile buttons correctly on mobile */
+        @media (max-width: 768px) {
+          .navbar,
+          nav.navbar {
+            min-height: 70px !important;
+          }
+
+          .mobile-toggle,
+          .phone-header-btn {
+            position: absolute !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            margin-top: auto !important;
+            margin-bottom: auto !important;
+            transform: none !important;
+            z-index: 1001 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            cursor: pointer !important;
+            padding: 6px !important;
+            background: none !important;
+            color: var(--nav-text, var(--text-dark)) !important;
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: transparent !important;
+          }
+
+          html[data-zappy-site-type="ecommerce"] .phone-header-btn,
+          body[data-zappy-site-type="ecommerce"] .phone-header-btn,
+          html[data-zappy-site-type="ecommerce"] header .phone-header-btn,
+          html[data-zappy-site-type="ecommerce"] nav .phone-header-btn {
+            display: none !important;
+            visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            min-width: 0 !important;
+            overflow: hidden !important;
+          }
+          
+          /* LTR positioning (default): hamburger LEFT, phone RIGHT */
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .mobile-toggle,
+          html[dir="ltr"] .mobile-toggle {
+            left: 12px !important;
+            right: auto !important;
+          }
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .phone-header-btn,
+          html[dir="ltr"] .phone-header-btn {
+            right: 12px !important;
+            left: auto !important;
+          }
+          
+          /* RTL positioning: hamburger RIGHT, phone LEFT */
+          html[dir="rtl"] .mobile-toggle,
+          html[lang="he"] .mobile-toggle,
+          html[lang="ar"] .mobile-toggle {
+            right: 12px !important;
+            left: auto !important;
+          }
+          html[dir="rtl"] .phone-header-btn,
+          html[lang="he"] .phone-header-btn,
+          html[lang="ar"] .phone-header-btn {
+            left: 12px !important;
+            right: auto !important;
+          }
+          
+          /* CRITICAL: Ensure nav-container has min-height on mobile */
+          /* All children are positioned absolutely/fixed on mobile, so height:auto collapses to 0 */
+          .nav-container {
+            min-height: 70px !important;
+            position: relative !important;
+          }
+          
+          /* Ensure SVG icons are properly sized and inherit color */
+          .mobile-toggle svg,
+          .phone-header-btn svg {
+            width: 24px !important;
+            height: 24px !important;
+            /* Don't force display - let JavaScript control hamburger/close toggle */
+          }
+          
+          /* Reset nav-cta-container on mobile - remove desktop box-shadow/padding */
+          /* that creates a visible ghost box when CTA button is hidden */
+          .nav-cta-container {
+            box-shadow: none !important;
+            padding: 0 !important;
+          }
+          
+          /* Hide nav-cta-container entirely on mobile when there's no lang-switcher */
+          /* (only the CTA button is inside, and it's hidden on mobile) */
+          .nav-cta-container:not(:has(.lang-switcher)) {
+            display: none !important;
+          }
+          
+          /* CRITICAL: Prevent hero image fade gradient from bleeding over headline text */
+          /* The .image-fade-gradient has bottom: -30px (extends below parent) */
+          /* On mobile stacked layout, this overlaps the h1 text below the image */
+          .hero-image-column {
+            overflow: hidden !important;
+          }
+          .image-fade-gradient {
+            bottom: 0 !important;
+          }
+          
+          /* Hide desktop language switcher on mobile - hamburger menu handles it */
+          /* High specificity to override stored CSS */
+          .lang-switcher,
+          .nav-cta-container .lang-switcher,
+          .nav-container .lang-switcher,
+          .navbar .lang-switcher,
+          .navbar .nav-cta-container .lang-switcher {
+            display: none !important;
+          }
+        }
+      `;
+      
+      // Remove existing fix if present and inject new one
+      const existing = document.getElementById('zappy-mobile-nav-fix');
+      if (existing) existing.remove();
+      document.head.appendChild(criticalCSS);
+      
+      console.log('[Navbar] Critical CSS injected for mobile nav positioning');
+      
+      // ONLY apply inline positioning styles on mobile viewport
+      // On desktop, the CSS handles hiding these buttons with display: none
+      // Inline styles were breaking desktop layout by overriding CSS
+      const isMobileViewport = window.innerWidth <= 768;
+      
+      if (mobileToggle) {
+        // Icon sizing applies to all viewports for consistency
+        const hamburgerIcon = mobileToggle.querySelector('.hamburger-icon');
+        const closeIcon = mobileToggle.querySelector('.close-icon');
+        
+        if (hamburgerIcon) {
+          hamburgerIcon.style.setProperty('width', '24px', 'important');
+          hamburgerIcon.style.setProperty('height', '24px', 'important');
+          hamburgerIcon.style.setProperty('display', 'block', 'important'); // Show hamburger by default
+        }
+        if (closeIcon) {
+          closeIcon.style.setProperty('width', '24px', 'important');
+          closeIcon.style.setProperty('height', '24px', 'important');
+          closeIcon.style.setProperty('display', 'none', 'important'); // Hide close icon by default
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          mobileToggle.style.setProperty('position', 'absolute', 'important');
+          mobileToggle.style.setProperty('top', '0', 'important');
+          mobileToggle.style.setProperty('bottom', '0', 'important');
+          mobileToggle.style.setProperty('margin-top', 'auto', 'important');
+          mobileToggle.style.setProperty('margin-bottom', 'auto', 'important');
+          mobileToggle.style.setProperty('transform', 'none', 'important');
+          mobileToggle.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          
+          console.log('[Navbar] Mobile toggle positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          mobileToggle.style.removeProperty('position');
+          mobileToggle.style.removeProperty('top');
+          mobileToggle.style.removeProperty('transform');
+          mobileToggle.style.removeProperty('z-index');
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared mobile toggle inline positioning');
+        }
+      }
+      
+      if (phoneBtn) {
+        // Icon sizing applies to all viewports
+        const phoneIcon = phoneBtn.querySelector('svg');
+        if (phoneIcon) {
+          phoneIcon.style.width = '24px';
+          phoneIcon.style.height = '24px';
+          phoneIcon.setAttribute('width', '24');
+          phoneIcon.setAttribute('height', '24');
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          phoneBtn.style.setProperty('position', 'absolute', 'important');
+          phoneBtn.style.setProperty('top', '0', 'important');
+          phoneBtn.style.setProperty('bottom', '0', 'important');
+          phoneBtn.style.setProperty('margin-top', 'auto', 'important');
+          phoneBtn.style.setProperty('margin-bottom', 'auto', 'important');
+          phoneBtn.style.setProperty('transform', 'none', 'important');
+          phoneBtn.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          
+          console.log('[Navbar] Phone button positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          phoneBtn.style.removeProperty('position');
+          phoneBtn.style.removeProperty('top');
+          phoneBtn.style.removeProperty('transform');
+          phoneBtn.style.removeProperty('z-index');
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared phone button inline positioning');
+        }
+      }
+    } else {
+      console.log('[Navbar] Could not parse background color:', bgColor);
+    }
+    
+    // MOBILE MENU TOGGLE
+    // Re-query in case DOM changed (mobileToggle already declared at top of function)
+    mobileToggle = document.getElementById('mobileToggle') ||
+                   document.querySelector('.mobile-toggle') ||
+                   document.querySelector('.hamburger') ||
+                   document.querySelector('.hamburger-menu') ||
+                   document.querySelector('.menu-toggle') ||
+                   document.querySelector('.burger-menu') ||
+                   document.querySelector('[aria-label="Menu"]') ||
+                   document.querySelector('[aria-label="תפריט"]');
+    
+    // EXPANDED SEARCH: Find nav menu by ID or class
+    const navMenu = document.getElementById('navMenu') ||
+                  document.querySelector('.nav-menu') ||
+                  document.querySelector('.nav-links') ||
+                  document.querySelector('nav ul:not(.submenu)');
+    
+    if (!mobileToggle || !navMenu) {
+      console.log('[Navbar] Mobile toggle or menu not found:', { toggle: !!mobileToggle, menu: !!navMenu });
+      return;
+    }
+    
+    // Ensure navMenu has ID for CSS targeting
+    if (!navMenu.id) {
+      navMenu.id = 'navMenu';
+    }
+    
+    console.log('[Navbar] Initializing mobile menu...');
+    
+    // Remove any existing event listeners by cloning the button
+    const newToggle = mobileToggle.cloneNode(true);
+    mobileToggle.parentNode.replaceChild(newToggle, mobileToggle);
+    
+    // Toggle menu handler (shared by click and touchend)
+    function handleToggle(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const hamburgerIcon = newToggle.querySelector('.hamburger-icon');
+      const closeIcon = newToggle.querySelector('.close-icon');
+      const isActive = navMenu.classList.contains('active');
+      
+      if (isActive) {
+        // Close menu
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed');
+      } else {
+        // Open menu
+        navMenu.classList.add('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'none', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'block', 'important');
+        document.body.style.overflow = 'hidden';
+        console.log('[Navbar] Menu opened');
+      }
+    }
+    
+    // Use click for desktop/emulation and touchend as iOS Safari fallback.
+    // Prevent double-fire with a timestamp guard.
+    var lastToggleTime = 0;
+    function guardedToggle(e) {
+      var now = Date.now();
+      if (now - lastToggleTime < 300) return;
+      lastToggleTime = now;
+      handleToggle(e);
+    }
+    
+    newToggle.addEventListener('click', guardedToggle);
+    newToggle.addEventListener('touchend', guardedToggle);
+    
+    // Close menu when clicking nav links (but NOT dropdown toggles)
+    const navLinks = navMenu.querySelectorAll('a');
+    navLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        // Don't close if it's a dropdown child (unless it's a real navigation link)
+        if (this.getAttribute('href') === '#') return;
+        
+        const hamburgerIcon = newToggle.querySelector('.hamburger-icon');
+        const closeIcon = newToggle.querySelector('.close-icon');
+        
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed (link clicked)');
+      });
+    });
+    
+    // DROPDOWN MENU TOGGLE (for mobile and touch devices)
+    var dropdownToggles = navMenu.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var parent = this.closest('.nav-dropdown');
+        if (!parent) return;
+        
+        // Close other open dropdowns at the same level
+        var siblings = parent.parentNode.querySelectorAll('.nav-dropdown.open');
+        siblings.forEach(function(sib) {
+          if (sib !== parent) sib.classList.remove('open');
+        });
+        
+        parent.classList.toggle('open');
+        console.log('[Navbar] Dropdown toggled:', parent.classList.contains('open') ? 'open' : 'closed');
+      });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.nav-dropdown')) {
+        var openDropdowns = document.querySelectorAll('.nav-dropdown.open');
+        openDropdowns.forEach(function(dd) { dd.classList.remove('open'); });
+      }
+    });
+    
+    console.log('[Navbar] Dropdown handlers initialized for ' + dropdownToggles.length + ' dropdowns');
+    
+    // Phone button functionality (phoneBtn already declared at top of function)
+    if (phoneBtn) {
+      phoneBtn.addEventListener('click', function() {
+        // Get phone number from placeholder in page or use default
+        const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+        const phoneNumber = phoneLinks.length > 0 
+          ? phoneLinks[0].getAttribute('href').replace('tel:', '')
+          : '058-5553431';
+        
+        window.location.href = 'tel:' + phoneNumber;
+        console.log('[Navbar] Phone button clicked');
+      });
+    }
+    
+    console.log('[Navbar] Mobile menu initialized successfully');
+    
+    // WhatsApp button visibility is now controlled via CSS (siteSettings).
+    // No JS-based desktop hiding — the button is visible on both mobile and desktop by default.
+  });
+})();
+
+</script>
+  
+  <main id="main" class="blog-page ai-generated-page"><section class="products-and-devices-hero-section" data-layout-spec="תכשירים ומכשירים-hero" dir="rtl" data-hero-type="fullscreen-scrim">
+  <div class="padh-container">
+    <div class="padh-grid">
+
+      <!-- Text Card (Right Column in RTL) -->
+      <div class="padh-text-card">
+        <!-- Leaf ornament -->
+        <div class="padh-leaf-ornament" aria-hidden="true">
+          <svg data-no-icon-edit="true" aria-hidden="true" width="72" height="32" viewBox="0 0 72 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M36 28 C28 20 14 18 6 22" stroke="#B89A63" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.65"></path>
+            <path d="M36 28 C44 20 58 18 66 22" stroke="#B89A63" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.65"></path>
+            <ellipse cx="20" cy="19" rx="7" ry="4" transform="rotate(-30 20 19)" fill="#B89A63" opacity="0.25"></ellipse>
+            <ellipse cx="52" cy="19" rx="7" ry="4" transform="rotate(30 52 19)" fill="#B89A63" opacity="0.25"></ellipse>
+            <circle cx="36" cy="28" r="2.5" fill="#B89A63" opacity="0.55"></circle>
+          </svg>
+        </div>
+
+        <span class="padh-label">תכשירים ומכשירים מקצועיים</span>
+
+        <h1 class="padh-h1">הכלים הנכונים<br>לטיפול שמשנה חיים</h1>
+
+        <div class="padh-separator" aria-hidden="true">
+          <svg data-no-icon-edit="true" aria-hidden="true" width="60" height="6" viewBox="0 0 60 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="3" x2="60" y2="3" stroke="#B89A63" stroke-width="1.5" stroke-opacity="0.5"></line>
+          </svg>
+        </div>
+
+        <h3 class="padh-subtitle">תכשירים קליניים ומכשירים שיקומיים שנבחרו בקפידה לטיפול בכף הרגל</h3>
+
+        <p class="padh-description">אנו משתמשים אך ורק במוצרים ובציוד מקצועי ברמה הגבוהה ביותר — מותאמים לטיפול בסוכרתיים, לאחר פציעה, ולמצבי ציפורן ועור מורכבים. כל בחירה נעשית מתוך מחשבה על בטיחותכם ורווחתכם.</p>
+
+        <div class="padh-cta-row">
+          <a href="/contact" class="padh-btn-primary">
+            <svg data-element-type="icon" data-icon-type="svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.63A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"></path></svg>
+            לייעוץ אישי
+          </a>
+          <a href="https://wa.me/[whatsapp_handle]" class="padh-btn-whatsapp" target="_blank" rel="noopener">
+            <svg data-element-type="icon" data-icon-type="svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.564 4.14 1.544 5.876L.057 23.5a.5.5 0 00.614.635l5.807-1.52A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.9a9.9 9.9 0 01-5.031-1.372l-.36-.214-3.742.98.999-3.647-.235-.374A9.86 9.86 0 012.1 12C2.1 6.534 6.534 2.1 12 2.1S21.9 6.534 21.9 12 17.466 21.9 12 21.9z"></path></svg>
+            וואטסאפ
+          </a>
+          <div class="padh-phone-inline">
+            <span class="padh-phone-label">להתקשרות ישירה:</span>
+            <a href="tel:[business_phone]" class="padh-phone-number">[business_phone]</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image Column (Left Column in RTL) -->
+      <div class="padh-image-col">
+        <div class="padh-image-bg-blob" aria-hidden="true"></div>
+        <div class="padh-image-wrapper">
+          <img data-hero-bg="true" data-context="Professional rehabilitative pedicure clinic setting: close-up of a therapist using a clinical electric nail drill device on a patient foot, with neatly organized therapeutic creams, sterilized tools and medical-grade products visible on a clean wooden tray nearby. Warm natural lighting, soft beige and sage green tones, clean and trustworthy atmosphere. No blood or medical distress — calm, healing, dignified." width="660" height="520" src="/assets/section-hero-products-and-devices-hero-image-1.webp" alt="טיפול שיקומי מקצועי בכף הרגל עם ציוד ותכשירים קליניים" class="padh-main-image">
+          <!-- Foot icon decoration -->
+          <div class="padh-foot-badge" aria-hidden="true">
+            <svg data-no-icon-edit="true" aria-hidden="true" width="36" height="36" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M24 4C16 4 10 11 10 20C10 28 14 34 18 38C20 40 22 44 22 48H26C26 44 28 40 30 38C34 34 38 28 38 20C38 11 32 4 24 4Z" stroke="#7A8B5A" stroke-width="2" fill="none"></path>
+              <circle cx="17" cy="15" r="2.5" fill="#7A8B5A" opacity="0.7"></circle>
+              <circle cx="24" cy="12" r="2.5" fill="#7A8B5A" opacity="0.7"></circle>
+              <circle cx="31" cy="15" r="2.5" fill="#7A8B5A" opacity="0.7"></circle>
+              <circle cx="20" cy="20" r="2" fill="#7A8B5A" opacity="0.5"></circle>
+              <circle cx="28" cy="20" r="2" fill="#7A8B5A" opacity="0.5"></circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="products-and-devices-intro-section" data-layout-spec="תכשירים ומכשירים-intro" dir="rtl">
+  <div class="padi-container">
+
+    <!-- Section Header -->
+    <div class="padi-header">
+      <h2 class="padi-title">תכשירים ומכשירים לטיפול שיקומי ברגליים</h2>
+      <div class="padi-title-rule" aria-hidden="true"></div>
+      <p class="padi-subtitle">כאן תמצאו את כל מה שצריך לטיפול מקצועי ואישי ברגליים — מתכשירים מרפאים ועד מכשירים מתקדמים, הכול נבחר בקפידה מתוך ניסיון קליני אמיתי.</p>
+    </div>
+
+    <!-- Two-Column Layout -->
+    <div class="padi-content-grid">
+
+      <!-- Image Column -->
+      <div class="padi-image-col">
+        <figure class="padi-image-figure">
+          <img data-context="A warm, professional close-up of a rehabilitative pedicurist\" s="" workspace:="" neatly="" arranged="" therapeutic="" foot="" care="" products="" —="" creams,="" serums,="" and="" small="" medical-grade="" tools="" on="" a="" clean="" wooden="" surface="" with="" soft="" natural="" light.="" the="" setting="" feels="" clinical="" yet="" personal,="" warm="" trustworthy,="" not="" sterile.="" suitable="" for="" hebrew="" health="" wellness="" website="" targeting="" older="" adults="" diabetic="" patients.'="" width="600" height="400" src="/assets/section-intro-products-and-devices-intro-image-1.webp" alt="תכשירים ומכשירים מקצועיים לפדיקור שיקומי">
+        </figure>
+      </div>
+
+      <!-- Content Column -->
+      <div class="padi-content-col">
+
+        <div class="padi-text-block">
+          <h3 class="padi-block-title">מרכז הידע והציוד המקצועי שלכם</h3>
+          <p class="padi-block-body">עמוד זה מרכז את שירותי הפדיקור השיקומי של משה, לצד תכשירים ומכשירים מקצועיים שנבחרו במיוחד לטיפול בבעיות ציפורניים, יבלות, עקב סדוק, רגל סוכרתית ועוד. כל מוצר נבדק ומומלץ מתוך ניסיון קליני ישיר.</p>
+        </div>
+
+        <div class="padi-text-block">
+          <h3 class="padi-block-title">מתאים ללקוחות פרטיים, פדיקוריסטיות וקליניקות</h3>
+          <p class="padi-block-body">בין אם אתם לקוחות המחפשים פתרון לבעיה ספציפית, פדיקוריסטיות המעוניינות להרחיב את ארגז הכלים המקצועי שלהן, או קליניקות המחפשות ציוד אמין — כאן תמצאו הכול, עם ייעוץ אישי זמין בכל שלב.
+          </p>
+        </div>
+
+        <!-- Highlights Strip -->
+        <div class="padi-highlights">
+          <div class="padi-highlight-item">
+            <span class="padi-highlight-text">טיפול אישי</span>
+          </div>
+          <div class="padi-highlight-divider" aria-hidden="true"></div>
+          <div class="padi-highlight-item">
+            <span class="padi-highlight-text">מוצרים מקצועיים</span>
+          </div>
+          <div class="padi-highlight-divider" aria-hidden="true"></div>
+          <div class="padi-highlight-item">
+            <span class="padi-highlight-text">ייעוץ בוואטסאפ</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Decorative leaf ornament -->
+  <div class="padi-leaf-ornament" aria-hidden="true">
+    <svg data-no-icon-edit="true" aria-hidden="true" width="80" height="36" viewBox="0 0 80 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40 18 C30 8, 10 10, 4 18" stroke="#C8A96E" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"></path>
+      <path d="M40 18 C50 8, 70 10, 76 18" stroke="#C8A96E" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"></path>
+      <path d="M20 14 C18 10, 22 6, 26 10" stroke="#C8A96E" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.5"></path>
+      <path d="M60 14 C62 10, 58 6, 54 10" stroke="#C8A96E" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.5"></path>
+      <circle cx="40" cy="19" r="2" fill="#C8A96E" opacity="0.6"></circle>
+    </svg>
+  </div>
+
+</section>
+
+<section class="products-and-devices-services-section" data-layout-spec="תכשירים ומכשירים-services" dir="rtl">
+
+  <!-- Decorative organic corner motif top-right -->
+  <svg class="pad-corner-motif pad-corner-tr" aria-hidden="true" data-no-icon-edit="true" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M160 0 Q120 40 80 30 Q40 20 10 60 Q0 80 0 120" stroke="#C8A96E" stroke-width="1.2" fill="none" opacity="0.25"></path><path d="M160 20 Q130 55 95 45 Q60 35 30 70 Q15 90 10 130" stroke="#7A8B5A" stroke-width="0.8" fill="none" opacity="0.15"></path></svg>
+
+  <!-- Decorative organic corner motif bottom-left -->
+  <svg class="pad-corner-motif pad-corner-bl" aria-hidden="true" data-no-icon-edit="true" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 160 Q40 120 30 80 Q20 40 60 10 Q80 0 120 0" stroke="#C8A96E" stroke-width="1.2" fill="none" opacity="0.25"></path><path d="M20 160 Q55 130 45 95 Q35 60 70 30 Q90 15 130 10" stroke="#7A8B5A" stroke-width="0.8" fill="none" opacity="0.15"></path></svg>
+
+  <div class="pad-container">
+
+    <!-- Section Header -->
+    <header class="pad-section-header">
+      <h2 class="pad-main-title">תכשירים, מכשירים ושירותי טיפול</h2>
+      <!-- Accent rule -->
+      <div class="pad-accent-rule" aria-hidden="true"></div>
+      <p class="pad-main-desc">מגוון שלם של שירותים טיפוליים, תכשירים מקצועיים ומכשירים מתקדמים — הכל במקום אחד, בידיים מנוסות ובגישה שמכבדת את גופך ואת בריאותך.</p>
+    </header>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SUB-SECTION 1: שירותי טיפול -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="pad-subsection">
+      <div class="pad-subsection-title-row">
+        <h3 class="pad-subsection-title">שירותי הטיפול</h3>
+        <div class="pad-subsection-rule" aria-hidden="true"></div>
+      </div>
+
+      <div class="pad-services-grid">
+
+        <!-- Card 1 -->
+        <article class="pad-service-card card-default">
+          <div class="pad-service-icon">
+            <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><path d="M24 8C20 8 14 11 14 18c0 5 3 9 6 12l4 6 4-6c3-3 6-7 6-12 0-7-6-10-10-10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path><circle cx="24" cy="19" r="3" stroke="currentColor" stroke-width="1.6"></circle><path d="M18 38h12M20 42h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+          </div>
+          <div class="pad-service-content">
+            <h3 class="pad-service-title">פדיקור שיקומי</h3>
+            <p class="pad-service-desc">טיפול מעמיק ומקצועי בכפות הרגליים, המשלב ניקוי, עיצוב ציפורניים וטיפול בעור — בגישה רפואית ומותאמת אישית.</p>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="pad-service-card card-default">
+          <div class="pad-service-icon">
+            <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><path d="M12 36c0-8 4-14 12-18 8 4 12 10 12 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><path d="M24 18v6M20 30h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><ellipse cx="24" cy="37" rx="8" ry="3" stroke="currentColor" stroke-width="1.4"></ellipse></svg>
+          </div>
+          <div class="pad-service-content">
+            <h3 class="pad-service-title">טיפול בציפורניים עבות ופטרייתיות</h3>
+            <p class="pad-service-desc">הסרה בטוחה ועדינה של ציפורניים עבות, צהובות או פגועות, עם פרוטוקול מחטא מלא לשמירה על בריאות הרגל.</p>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="pad-service-card card-default">
+          <div class="pad-service-icon">
+            <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><path d="M16 12h16v4l4 4v12l-4 4H16l-4-4V20l4-4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path><path d="M20 28c0-2 1.5-4 4-4s4 2 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><circle cx="24" cy="22" r="1.5" fill="currentColor"></circle></svg>
+          </div>
+          <div class="pad-service-content">
+            <h3 class="pad-service-title">טיפול בציפורן חודרנית</h3>
+            <p class="pad-service-desc">פתרון מקצועי לציפורניים הנכנסות לבשר, כולל טיפול מיידי להקלה על כאב ומניעת דלקות חוזרות.</p>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="pad-service-card card-default">
+          <div class="pad-service-icon">
+            <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><path d="M14 34c2-6 5-10 10-12 5 2 8 6 10 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><path d="M20 22c0-2.5 1.8-4 4-4s4 1.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><path d="M10 38h28" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path><path d="M18 38v-2M24 38v-3M30 38v-2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
+          </div>
+          <div class="pad-service-content">
+            <h3 class="pad-service-title">טיפול ברגל הסוכרתית</h3>
+            <p class="pad-service-desc">טיפול מיוחד ועדין המותאם לחולי סוכרת, עם תשומת לב מלאה לרגישות העור, זרימת הדם ומניעת פצעים.</p>
+          </div>
+        </article>
+
+        <!-- Card 5 -->
+        <article class="pad-service-card card-default">
+          <div class="pad-service-icon">
+            <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><rect x="12" y="14" width="24" height="20" rx="4" stroke="currentColor" stroke-width="1.8"></rect><path d="M18 24h12M24 19v10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path><path d="M16 38h16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
+          </div>
+          <div class="pad-service-content">
+            <h3 class="pad-service-title">הסרת יבלות וקרניות</h3>
+            <p class="pad-service-desc">טיפול ממוקד ביבלות עמידות ובעור קשה ומעובה, תוך שימוש בשיטות מקצועיות שאינן פולשניות.</p>
+          </div>
+        </article>
+
+        <!-- Card 6 -->
+        <article class="pad-service-card card-default">
+          <div class="pad-service-icon">
+            <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="40" height="40"><path d="M24 10c-7 0-12 5-12 12 0 4 2 8 5 10l3 3h8l3-3c3-2 5-6 5-10 0-7-5-12-12-12z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path><path d="M20 32l1 5h6l1-5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path><path d="M21 22c0-1.7 1.3-3 3-3s3 1.3 3 3-1.3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+          </div>
+          <div class="pad-service-content">
+            <h3 class="pad-service-title">טיפול לאחר ניתוח ושיקום</h3>
+            <p class="pad-service-desc">ליווי מקצועי לאחר פרוצדורות כירורגיות ברגל, עם פרוטוקול שיקומי מותאם לקצב ההחלמה האישי.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SUB-SECTION 2: תכשירים -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="pad-subsection">
+      <div class="pad-subsection-title-row">
+        <h3 class="pad-subsection-title">תכשירים מקצועיים</h3>
+        <div class="pad-subsection-rule" aria-hidden="true"></div>
+      </div>
+      <p class="pad-subsection-intro">תכשירים שנבחרו בקפידה לשימוש קליני ולמכירה ישירה — יעילים, בטוחים, ומוכחים בשטח.</p>
+
+      <div class="pad-products-grid">
+
+        <!-- Product 1 -->
+        <article class="pad-product-card card-default">
+          <div class="pad-product-img-wrap">
+            <img data-context="Professional therapeutic foot cream in elegant amber glass jar with minimalist label, placed on a clean white surface with soft warm lighting, medical-grade skincare product for rehabilitative pedicure clinic" width="400" height="260" src="/assets/section-services-products-and-devices-services-image-1.webp" alt="קרם טיפולי לכפות רגליים">
+          </div>
+          <div class="pad-product-body">
+            <h3 class="pad-product-name">קרם שיקומי לכפות רגליים</h3>
+            <p class="pad-product-desc">קרם עשיר בחומצות אלפא הידרוקסי ושמן ארגן, לריכוך עמוק של עור קשה ויבש.</p>
+            <div class="pad-product-meta">
+              <span class="pad-product-meta-item"><span class="pad-meta-label">מיועד ל:</span> עור יבש, סדקים, כפות רגליים עייפות</span>
+              <span class="pad-product-meta-item"><span class="pad-meta-label">נפח:</span> 150 מ"ל</span>
+              <span class="pad-product-price">מחירון לקליניקות</span>
+            </div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pad-product-btn" target="_blank" rel="noopener noreferrer">
+              <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.548 4.107 1.509 5.845L.057 23.428a.5.5 0 00.515.572l5.736-1.501A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.001-1.367l-.36-.214-3.715.973.99-3.624-.234-.374A9.818 9.818 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"></path></svg>
+              להזמנה בוואטסאפ
+            </a>
+          </div>
+        </article>
+
+        <!-- Product 2 -->
+        <article class="pad-product-card card-default">
+          <div class="pad-product-img-wrap">
+            <img data-context="Professional antifungal nail treatment serum in a sleek dropper bottle with clean clinical label, photographed on marble surface with soft natural light, medical foot care product for pedicure clinic" width="400" height="260" src="/assets/section-services-products-and-devices-services-image-2.webp" alt="סרום אנטי פטרייתי לציפורניים">
+          </div>
+          <div class="pad-product-body">
+            <h3 class="pad-product-name">סרום אנטי-פטרייתי לציפורניים</h3>
+            <p class="pad-product-desc">פורמולה מרוכזת לטיפול בפטרת ציפורניים, מחזקת את הציפורן ומשקמת את מראה הרגל.</p>
+            <div class="pad-product-meta">
+              <span class="pad-product-meta-item"><span class="pad-meta-label">מיועד ל:</span> ציפורניים פטרייתיות, עבות, צהובות</span>
+              <span class="pad-product-meta-item"><span class="pad-meta-label">נפח:</span> 30 מ"ל</span>
+              <span class="pad-product-price">מחירון לקליניקות</span>
+            </div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pad-product-btn" target="_blank" rel="noopener noreferrer">
+              <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.548 4.107 1.509 5.845L.057 23.428a.5.5 0 00.515.572l5.736-1.501A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.001-1.367l-.36-.214-3.715.973.99-3.624-.234-.374A9.818 9.818 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"></path></svg>
+              להזמנה בוואטסאפ
+            </a>
+          </div>
+        </article>
+
+        <!-- Product 3 -->
+        <article class="pad-product-card card-default">
+          <div class="pad-product-img-wrap">
+            <img data-context="Professional heel repair balm and foot exfoliation kit in elegant packaging, warm neutral tones, placed on a wooden tray with dried herbs, medical-grade foot care products for rehabilitative pedicure practice" width="400" height="260" src="/assets/section-services-products-and-devices-services-image-3.webp" alt="ערכת שיקום עקבות סדוקות">
+          </div>
+          <div class="pad-product-body">
+            <h3 class="pad-product-name">בלסם שיקום עקבות סדוקות</h3>
+            <p class="pad-product-desc">בלסם עוצמתי לסדקים עמוקים בעקב, עם אוריאה 25% ותמצית קלנדולה לריפוי מהיר ולחות ממושכת.</p>
+            <div class="pad-product-meta">
+              <span class="pad-product-meta-item"><span class="pad-meta-label">מיועד ל:</span> עקבות סדוקות, עור מקולף, לחות אינטנסיבית</span>
+              <span class="pad-product-meta-item"><span class="pad-meta-label">נפח:</span> 100 מ"ל</span>
+              <span class="pad-product-price">מחירון לקליניקות</span>
+            </div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pad-product-btn" target="_blank" rel="noopener noreferrer">
+              <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path><path d="M12 0C5.373 0 0 5.373 0 12c0 2.117.548 4.107 1.509 5.845L.057 23.428a.5.5 0 00.515.572l5.736-1.501A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.808 9.808 0 01-5.001-1.367l-.36-.214-3.715.973.99-3.624-.234-.374A9.818 9.818 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"></path></svg>
+              להזמנה בוואטסאפ
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!-- SUB-SECTION 3: מכשירים מקצועיים -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="pad-subsection">
+      <div class="pad-subsection-title-row">
+        <h3 class="pad-subsection-title">מכשירים מקצועיים</h3>
+        <div class="pad-subsection-rule" aria-hidden="true"></div>
+      </div>
+      <p class="pad-subsection-intro">מכשירים מתקדמים המיועדים לפדיקוריסטים שיקומיים — לשדרוג הקליניקה ולתוצאות מדויקות יותר.</p>
+
+      <div class="pad-devices-grid">
+
+        <!-- Device 1 -->
+        <article class="pad-device-card card-bordered">
+          <div class="pad-device-inner">
+            <div class="pad-device-img-col">
+              <div class="pad-device-img-wrap">
+                <svg data-element-type="icon" data-icon-type="svg" class="pad-device-placeholder-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect x="20" y="14" width="40" height="52" rx="6" stroke="currentColor" stroke-width="2"></rect><path d="M32 14v-4h16v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><circle cx="40" cy="44" r="10" stroke="currentColor" stroke-width="1.8"></circle><path d="M36 44l3 3 6-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path><path d="M30 28h20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path></svg>
+              </div>
+            </div>
+            <div class="pad-device-info">
+              <h3 class="pad-device-name">מכשיר פרזה חשמלי מקצועי</h3>
+              <p class="pad-device-use"><span class="pad-meta-label">שימוש עיקרי:</span> השחזה, עיצוב ופרזה של ציפורניים וקרניות</p>
+              <p class="pad-device-audience"><span class="pad-meta-label">מיועד ל:</span> פדיקוריסטים שיקומיים, קוסמטיקאיות רגל, קלינאים</p>
+              <ul class="pad-device-benefits">
+                <li>סיבובים משתנים לבקרת עוצמה מדויקת</li>
+                <li>ראשים מתחלפים לכל סוגי הטיפול</li>
+                <li>שקט מנועי ורטט מינימלי לנוחות המטופל</li>
+              </ul>
+              <div class="pad-device-footer">
+                <span class="pad-device-price">לפרטים ומחיר</span>
+                <a href="https://wa.me/[whatsapp_handle]" class="pad-device-btn" target="_blank" rel="noopener noreferrer">לפרטים בוואטסאפ</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Device 2 -->
+        <article class="pad-device-card card-bordered">
+          <div class="pad-device-inner">
+            <div class="pad-device-img-col">
+              <div class="pad-device-img-wrap">
+                <svg data-element-type="icon" data-icon-type="svg" class="pad-device-placeholder-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="64" height="64"><path d="M24 58c0-10 7-18 16-18s16 8 16 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M40 40V24" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M33 28l7-7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path><path d="M28 58h24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path><path d="M16 64h48" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path></svg>
+              </div>
+            </div>
+            <div class="pad-device-info">
+              <h3 class="pad-device-name">מנורת UV/LED לחיטוי כלים</h3>
+              <p class="pad-device-use"><span class="pad-meta-label">שימוש עיקרי:</span> חיטוי וסטריליזציה של כלי עבודה בין מטופלים</p>
+              <p class="pad-device-audience"><span class="pad-meta-label">מיועד ל:</span> קליניקות פדיקור, מרפאות, מכוני יופי רפואיים</p>
+              <ul class="pad-device-benefits">
+                <li>מחזור חיטוי מלא תוך 3 דקות</li>
+                <li>עומד בתקני בטיחות אירופאיים</li>
+                <li>מגן על מטופלים בסיכון גבוה (סוכרת, חסינות נמוכה)</li>
+              </ul>
+              <div class="pad-device-footer">
+                <span class="pad-device-price">לפרטים ומחיר</span>
+                <a href="https://wa.me/[whatsapp_handle]" class="pad-device-btn" target="_blank" rel="noopener noreferrer">לפרטים בוואטסאפ</a>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="products-and-devices-benefits-section" data-layout-spec="תכשירים ומכשירים-benefits" dir="rtl">
+  <div class="benefits-container">
+
+    <!-- Top Row: Intro + Highlight Card -->
+    <div class="benefits-top-grid">
+
+      <!-- Right: Heading + Intro -->
+      <div class="benefits-intro">
+        <span class="benefits-eyebrow">למה לבחור במשה?</span>
+        <h2 class="benefits-heading">תכשירים ומכשירים שנבחרו מתוך ניסיון אמיתי</h2>
+        <!-- Decorative horizontal rule -->
+        <div class="benefits-rule-wrapper" aria-hidden="true">
+          <svg data-no-icon-edit="true" aria-hidden="true" width="60" height="8" viewBox="0 0 60 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="4" x2="60" y2="4" stroke="var(--accent)" stroke-width="1.5" stroke-opacity="0.55"></line>
+          </svg>
+        </div>
+        <p class="benefits-intro-text">כל מוצר ומכשיר שמשה משתמש בו עבר מסלול של בדיקה מעשית בקליניקה. לא מדובר בציוד גנרי מהמדף — אלא בפתרונות שנבחרו לאחר שנים של עבודה עם לקוחות סוכרתיים, מטופלים לאחר ניתוח ואנשים שסבלו שנים מיובש, סדקים ועיוותי ציפורן. הבחירה מונחית על ידי עקרונות הרפואה המסורתית ועל ידי תוצאות שרואים בשטח.</p>
+      </div>
+
+      <!-- Left: Professional Highlight Card -->
+      <div class="benefits-highlight-card">
+        <div class="highlight-card-inner">
+          <div class="highlight-badge">לפדיקוריסטיות וקליניקות</div>
+          <h3 class="highlight-title">שיתוף פעולה מקצועי</h3>
+          <p class="highlight-desc">פדיקוריסטיות עצמאיות ובעלי קליניקות מוזמנים לפנות למשה לקבלת מחירון מקצועי, מידע על דוגמיות ותנאי אספקה מותאמים לעבודה שוטפת. הציוד זמין גם לרכישה מקצועית בתנאים מיוחדים.</p>
+          <a href="https://wa.me/[whatsapp_handle]" target="_blank" class="btn-secondary highlight-cta">
+            <svg data-element-type="icon" data-icon-type="svg" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+            שלחו הודעה לקבלת מחירון
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Benefits Grid: 6 Cards -->
+    <div class="benefits-grid">
+
+      <!-- Card 1 -->
+      <article class="benefit-card">
+        <div class="benefit-number" aria-hidden="true">01</div>
+        <div class="benefit-content">
+          <h3 class="benefit-title">ניסיון מעשי מהקליניקה</h3>
+          <p class="benefit-desc">כל מוצר נבחר לאחר שימוש אמיתי עם מטופלים — לא על פי קטלוג. רק מה שעובד בשטח.</p>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="benefit-card">
+        <div class="benefit-number" aria-hidden="true">02</div>
+        <div class="benefit-content">
+          <h3 class="benefit-title">מותאם לעבודה קלינית</h3>
+          <p class="benefit-desc">הציוד מתאים לטיפול שיקומי, לקוחות סוכרתיים, ציפורניים עבות ומקרים מורכבים שדורשים דיוק.</p>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="benefit-card">
+        <div class="benefit-number" aria-hidden="true">03</div>
+        <div class="benefit-content">
+          <h3 class="benefit-title">פתרונות ליובש וסדקים</h3>
+          <p class="benefit-desc">תכשירים ייעודיים לעקבים יבשים, סדקים עמוקים ועור מעובה — תוצאות נראות לעין תוך ימים ספורים.</p>
+        </div>
+      </article>
+
+      <!-- Card 4 -->
+      <article class="benefit-card">
+        <div class="benefit-number" aria-hidden="true">04</div>
+        <div class="benefit-content">
+          <h3 class="benefit-title">אפשרות לדוגמיות</h3>
+          <p class="benefit-desc">ניתן לקבל דוגמיות לפני הזמנה, כך שתוכלו לבדוק את התוצאה על לקוח אמיתי לפני כל התחייבות.</p>
+        </div>
+      </article>
+
+      <!-- Card 5 -->
+      <article class="benefit-card">
+        <div class="benefit-number" aria-hidden="true">05</div>
+        <div class="benefit-content">
+          <h3 class="benefit-title">שירות אישי בוואטסאפ</h3>
+          <p class="benefit-desc">משה זמין לייעוץ אישי דרך וואטסאפ — שאלות על שימוש, מינון, התאמה למטופל ספציפי, ועוד.</p>
+        </div>
+      </article>
+
+      <!-- Card 6 -->
+      <article class="benefit-card">
+        <div class="benefit-number" aria-hidden="true">06</div>
+        <div class="benefit-content">
+          <h3 class="benefit-title">השראה מרפואת הרמב"ם</h3>
+          <p class="benefit-desc">הגישה משלבת עקרונות מרפואה מסורתית ויהודית לצד ידע מקצועי עדכני — גוף, נפש ורגל בהרמוניה.</p>
+        </div>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+<section class="products-and-devices-testimonials-section" data-layout-spec="תכשירים ומכשירים-testimonials" dir="rtl">
+  <!-- Texture overlay -->
+  <div class="pdt-texture" aria-hidden="true"></div>
+
+  <div class="pdt-container">
+
+    <!-- Section header -->
+    <div class="pdt-header">
+      <!-- Decorative leaf ornament -->
+      <div class="pdt-ornament" aria-hidden="true">
+        <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 80 32" width="80" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M40 16 C36 8, 26 6, 22 12 C26 10, 34 14, 40 16Z" fill="#B89A63" opacity="0.7"></path>
+          <path d="M40 16 C44 8, 54 6, 58 12 C54 10, 46 14, 40 16Z" fill="#B89A63" opacity="0.7"></path>
+          <line x1="40" y1="16" x2="40" y2="28" stroke="#B89A63" stroke-width="1" opacity="0.5"></line>
+        </svg>
+      </div>
+
+      <!-- Tag line -->
+      <p class="pdt-tagline">לקוחות פרטיים &nbsp;|&nbsp; מטפלים &nbsp;|&nbsp; קליניקות</p>
+
+      <h2 class="pdt-title">מה אומרים עלינו</h2>
+
+      <!-- Horizontal rule ornament -->
+      <div class="pdt-rule" aria-hidden="true">
+        <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 60 4" width="60" height="4" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0" y1="2" x2="60" y2="2" stroke="#B89A63" stroke-width="1" opacity="0.5"></line>
+        </svg>
+      </div>
+
+      <p class="pdt-intro">הלקוחות שלנו מגיעים עם כאב, מגבלה, ולעיתים גם מבוכה. הם עוזבים עם הקלה, ביטחון ותחושת כבוד עצמי מחודשת. קראו מה יש להם לספר.</p>
+    </div>
+
+    <!-- Testimonials grid -->
+    <div class="pdt-grid">
+
+      <!-- Card 1 -->
+      <article class="pdt-card">
+        <div class="pdt-quote-mark" aria-hidden="true">“</div>
+        <blockquote class="pdt-quote">
+          <p>סבלתי שנים מציפורן חודרת שגרמה לי לכאב בכל צעד. משה טיפל בי בסבלנות ובמקצועיות שלא פגשתי בשום מקום אחר. אחרי שני ביקורים הרגשתי כאילו קיבלתי רגליים חדשות לגמרי.</p>
+        </blockquote>
+        <footer class="pdt-card-footer">
+          <span class="pdt-author-name">ר.כ.</span>
+          <span class="pdt-author-detail">לקוחה פרטית, תל אביב</span>
+        </footer>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="pdt-card">
+        <div class="pdt-quote-mark" aria-hidden="true">“</div>
+        <blockquote class="pdt-quote">
+          <p>כסוכרתי, הרגליים שלי דורשות טיפול מיוחד ועדין. משה מבין בדיוק מה נדרש — הוא בקיא בפרוטוקולים הרפואיים, זהיר, ומסביר כל שלב בטיפול. אני ממליץ עליו לכל חולה סוכרת ללא היסוס.</p>
+        </blockquote>
+        <footer class="pdt-card-footer">
+          <span class="pdt-author-name">א.מ.</span>
+          <span class="pdt-author-detail">לקוח פרטי, ירושלים</span>
+        </footer>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="pdt-card">
+        <div class="pdt-quote-mark" aria-hidden="true">“</div>
+        <blockquote class="pdt-quote">
+          <p>שלחתי אליו מטופלים מהקליניקה שלי שסבלו מקלוסיות ועיבויי עור קשים. כל אחד מהם חזר עם שיפור משמעותי ועם מילים טובות על הגישה האנושית והמקצועית של משה. שיתוף פעולה מצוין.</p>
+        </blockquote>
+        <footer class="pdt-card-footer">
+          <span class="pdt-author-name">ד"ר ש.ל.</span>
+          <span class="pdt-author-detail">פיזיותרפיסטית, רמת גן</span>
+        </footer>
+      </article>
+
+    </div>
+    <!-- /grid -->
+
+  </div>
+  <!-- /container -->
+
+</section>
+
+<section class="products-and-devices-faq-section" data-layout-spec="תכשירים ומכשירים-faq" dir="rtl">
+  <!-- Botanical decorative corners -->
+  <svg class="faq-botanical-corner faq-botanical-corner--tr" aria-hidden="true" data-no-icon-edit="true" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M110,10 Q90,30 70,20 Q85,45 60,55 Q80,60 75,80 Q95,70 100,50 Q120,45 110,10Z" stroke="#B89A63" stroke-width="1.2" fill="none" opacity="0.22"></path>
+    <path d="M95,15 Q75,35 55,25" stroke="#B89A63" stroke-width="1" fill="none" opacity="0.18"></path>
+    <path d="M105,35 Q88,50 72,42" stroke="#B89A63" stroke-width="1" fill="none" opacity="0.15"></path>
+  </svg>
+  <svg class="faq-botanical-corner faq-botanical-corner--bl" aria-hidden="true" data-no-icon-edit="true" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10,110 Q30,90 20,70 Q45,85 55,60 Q60,80 80,75 Q70,95 50,100 Q45,120 10,110Z" stroke="#B89A63" stroke-width="1.2" fill="none" opacity="0.22"></path>
+    <path d="M15,95 Q35,75 25,55" stroke="#B89A63" stroke-width="1" fill="none" opacity="0.18"></path>
+    <path d="M35,105 Q50,88 42,72" stroke="#B89A63" stroke-width="1" fill="none" opacity="0.15"></path>
+  </svg>
+
+  <div class="faq-container">
+    <!-- Section heading -->
+    <div class="faq-heading-block">
+      <h2 class="faq-main-title">שאלות נפוצות</h2>
+      <div class="faq-heading-rule" aria-hidden="true"></div>
+    </div>
+
+    <!-- Two-column grid: FAQ + CTA -->
+    <div class="faq-grid">
+
+      <!-- FAQ Column (right) -->
+      <div class="faq-questions-col">
+
+        <div class="faq-item">
+          <h3 class="faq-question">האם כל התכשירים מתאימים לסוכרתיים?</h3>
+          <p class="faq-answer">כן. כל המוצרים שאני בוחר ומשתמש בהם נבחרו בקפידה לטיפול בכפות רגליים רגישות, כולל לסוכרתיים. הם נטולי בישום חריף, עדינים על העור ומאושרים לשימוש קליני. לפני כל טיפול אני בודק את מצב העור ומתאים את החומרים אישית.</p>
+        </div>
+        <div class="faq-divider" aria-hidden="true"></div>
+
+        <div class="faq-item">
+          <h3 class="faq-question">מה ההבדל בין קרם לכאבי עקב לבין קרם לחות רגיל?</h3>
+          <p class="faq-answer">קרמים שיקומיים לעקב מכילים ריכוז גבוה של אוריאה (10%–25%) המסייע לפירוק עור קשה וסדוק לעומק, בעוד קרמי לחות רגילים מציפים את פני השטח בלבד. לטיפול אמיתי בסדקים עמוקים נדרשת פורמולה ייעודית.</p>
+        </div>
+        <div class="faq-divider" aria-hidden="true"></div>
+
+        <div class="faq-item">
+          <h3 class="faq-question">האם ניתן לרכוש את המוצרים ללא טיפול?</h3>
+          <p class="faq-answer">חלק מהמוצרים ניתנים לרכישה ישירה לאחר ייעוץ קצר. מוצרים מקצועיים כגון מכשירי עיסוי רפואיים או תכשירי ציפורניים נמכרים בדרך כלל לאחר הערכה אישית, כדי להבטיח התאמה מלאה לצרכי כף הרגל שלכם.</p>
+        </div>
+        <div class="faq-divider" aria-hidden="true"></div>
+
+        <div class="faq-item">
+          <h3 class="faq-question">כמה זמן לוקח לראות תוצאות מהתכשירים?</h3>
+          <p class="faq-answer">ברוב המקרים ניכרת שיפור במרקם ובגמישות העור תוך שבוע עד שבועיים של שימוש עקבי. לבעיות כרוניות כמו סדקים עמוקים או עור קשה מאוד, ייתכן שיידרשו 3–4 שבועות לשינוי מורגש. אני מדריך כל לקוח כיצד להשתמש נכון.</p>
+        </div>
+        <div class="faq-divider" aria-hidden="true"></div>
+
+        <div class="faq-item">
+          <h3 class="faq-question">האם המכשירים בטוחים לשימוש ביתי?</h3>
+          <p class="faq-answer">המכשירים שאני ממליץ עליהם לשימוש ביתי נבחרו בשל קלות הפעלתם ובטיחותם. אני מספק הדרכה מלאה עם כל מכשיר, כולל הסברים על עוצמת שימוש, תדירות מומלצת ומצבים שבהם יש להימנע מהשימוש.</p>
+        </div>
+
+      </div>
+
+      <!-- CTA Card Column (left) -->
+      <div class="faq-cta-col">
+        <div class="faq-cta-card">
+          <!-- Leaf ornament -->
+          <div class="faq-cta-ornament" aria-hidden="true">
+            <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 80 32" fill="none" xmlns="http://www.w3.org/2000/svg" width="72" height="28">
+              <path d="M40,28 Q28,18 20,22 Q30,10 40,16 Q50,10 60,22 Q52,18 40,28Z" stroke="#B89A63" stroke-width="1.3" fill="none" opacity="0.55"></path>
+              <line x1="40" y1="28" x2="40" y2="4" stroke="#B89A63" stroke-width="1" opacity="0.4"></line>
+              <path d="M40,16 Q34,12 28,14" stroke="#B89A63" stroke-width="0.9" fill="none" opacity="0.35"></path>
+              <path d="M40,16 Q46,12 52,14" stroke="#B89A63" stroke-width="0.9" fill="none" opacity="0.35"></path>
+            </svg>
+          </div>
+
+          <h3 class="faq-cta-title">מחפשים פתרון מקצועי לכף הרגל?</h3>
+          <p class="faq-cta-desc">אני כאן לעזור — בין אם מדובר בבחירת תכשיר מתאים, ייעוץ לגבי מכשיר ביתי, או הדרכה לטיפול עצמי נכון. פנו אלי ישירות ואשמח לענות על כל שאלה.</p>
+
+          <ul class="faq-cta-list">
+            <li class="faq-cta-list-item">
+              <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="#7A8B5A" stroke-width="1.5"></circle>
+                <path d="M6 10.5l2.5 2.5 5-5" stroke="#7A8B5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>ייעוץ אישי ומותאם לצרכים שלכם</span>
+            </li>
+            <li class="faq-cta-list-item">
+              <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="#7A8B5A" stroke-width="1.5"></circle>
+                <path d="M6 10.5l2.5 2.5 5-5" stroke="#7A8B5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>מחירון שקוף ללא הפתעות</span>
+            </li>
+            <li class="faq-cta-list-item">
+              <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18" aria-hidden="true">
+                <circle cx="10" cy="10" r="9" stroke="#7A8B5A" stroke-width="1.5"></circle>
+                <path d="M6 10.5l2.5 2.5 5-5" stroke="#7A8B5A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>דוגמיות לפי צורך לפני רכישה</span>
+            </li>
+          </ul>
+
+          <a href="https://wa.me/972585553431" target="_blank" rel="noopener noreferrer" class="faq-cta-btn">
+            <svg data-element-type="icon" data-icon-type="svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="22" height="22" aria-hidden="true">
+              <path d="M20.52 3.48A11.93 11.93 0 0012.01 0C5.39 0 .01 5.37.01 12c0 2.12.55 4.18 1.6 6L0 24l6.18-1.62A11.97 11.97 0 0012.01 24c6.62 0 12-5.37 12-12 0-3.21-1.25-6.22-3.49-8.52zM12.01 22c-1.85 0-3.66-.5-5.24-1.44l-.37-.22-3.88 1.02 1.04-3.78-.24-.39A9.94 9.94 0 012.01 12c0-5.51 4.49-10 10-10 2.67 0 5.18 1.04 7.07 2.93A9.93 9.93 0 0122.01 12c0 5.51-4.49 10-10 10zm5.49-7.49c-.3-.15-1.77-.87-2.04-.97-.28-.1-.48-.15-.68.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.27-.47-2.42-1.49-.9-.8-1.5-1.78-1.68-2.08-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.68-1.63-.93-2.23-.24-.58-.49-.5-.68-.51-.17-.01-.37-.01-.57-.01s-.52.07-.79.37c-.27.3-1.04 1.01-1.04 2.47s1.06 2.87 1.21 3.07c.15.2 2.09 3.19 5.07 4.48.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.19-.57-.34z" fill="currentColor"></path>
+            </svg>
+            וואטסאפ: 058-555-3431
+          </a>
+
+          <p class="faq-cta-note">זמינות בימים א׳–ה׳, ניתן גם להשאיר הודעה</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section></main>
+  
+  <footer class="site-footer" dir="rtl">
+  <div class="footer-main">
+    <div class="footer-container">
+      <div class="footer-grid">
+
+        <!-- Column 1: Company Info -->
+        <div class="footer-col footer-col--brand">
+          <div class="footer-logo-wrap">
+            <img src="/assets/logo.webp" alt="משה - פדיקוריסט שיקומי " class="logo" data-element-type="image" data-element-id="img-1779030133409-29r9qaylj" data-zappy-footer-image="true">
+          </div>
+          <p class="footer-tagline">טיפול מקצועי ומחזיר כבוד לכפות הרגליים שלך. בגישה חמה, סבלנית ומותאמת אישית.</p>
+          <div class="footer-social">
+            
+            
+            
+          </div>
+        </div>
+
+        <!-- Column 2: Quick Links -->
+        <div class="footer-col">
+          <h3 class="footer-heading">
+            <span class="footer-heading-line"></span>
+            ניווט מהיר
+          </h3>
+          <ul class="footer-nav">
+            <li><a href="/">בית</a></li>
+            <li><a href="/services">שירותים</a></li>
+            <li><a href="/about">אודות</a></li>
+            <li><a href="/contact">צור קשר</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Contact Info -->
+        <div class="footer-col">
+          <h3 class="footer-heading">
+            <span class="footer-heading-line"></span>
+            יצירת קשר
+          </h3>
+          <ul class="footer-contact" ><li>
+              <span class="contact-icon"><i class="fas fa-envelope" data-element-type="icon" data-element-id="icon-1779030133408-9ovbd7y44" data-icon-type="fontawesome" style="cursor: pointer;"></i></span>
+              <span class="contact-text"><a href="mailto:lr12345@013net.net">lr12345@013net.net</a></span>
+            </li><li>
+              <span class="contact-icon"><i class="fas fa-phone" data-element-type="icon" data-element-id="icon-1779030133408-wdnuq9qd6" data-icon-type="fontawesome" style="cursor: pointer;"></i></span>
+              <span class="contact-text"><a href="tel:058-5553431">058-5553431</a></span>
+            </li><li>
+              <span class="contact-icon"><i class="fab fa-whatsapp zappy-native-element" data-element-type="icon" data-element-id="native-icon-1779030253070-i51zkry2f" style="cursor: pointer;"></i></span>
+              <span class="contact-text"><a href="https://wa.me/972585553431" target="_blank" rel="noopener noreferrer">וואטסאפ</a></span>
+            </li><li><a href="/" style="display:flex;align-items:flex-start;gap:inherit"><span class="contact-icon"><i class="fas fa-map-marker-alt" style="cursor: pointer;"></i></span>
+              <span class="contact-text">יאטקובסקי אחים 36, פתח תקווה, מרכז, 4965239, ישראל</span></a></li></ul>
+        </div>
+
+        <!-- Column 4: Hours / Extra -->
+        <div class="footer-col">
+          <h3 class="footer-heading">
+            <span class="footer-heading-line"></span>
+            שעות פעילות
+          </h3>
+          <ul class="footer-hours">
+            <li><a href="/"><span class="hours-day">ראשון – חמישי</span><span class="hours-time">09:00 – 19:00</span></a></li>
+            <li><a href="/"><span class="hours-day">שישי</span><span class="hours-time">09:00 – 14:00</span></a></li>
+            <li><a href="/"><span class="hours-day">שבת</span><span class="hours-time">סגור</span></a></li>
+          </ul>
+          <p class="zappy-editable"><a href="/contact" class="footer-cta-btn" data-element-type="button" data-element-id="btn-1779030133406-3nhcljo3f" data-native-element="true">קבע תור עכשיו</a>
+        </p></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="footer-bottom">
+    <div class="footer-container">
+      <div class="footer-bottom-inner">
+        <p class="footer-copyright">© 2026 משה - פדיקוריסט שיקומי . כל הזכויות שמורות.</p>
+        <div class="footer-legal">
+          <a href="/privacy">מדיניות פרטיות</a>
+          <span class="footer-legal-sep">|</span>
+          <a href="/terms">תנאי שימוש</a>
+          <span class="footer-legal-sep">|</span>
+          <a href="/accessibility">נגישות</a>
+          <span class="footer-legal-sep">|</span>
+          <a href="https://zappy5.com" target="_blank" class="zappy-attribution">נוצר באמצעות Zappy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+  
+  
+  
+  <div data-integration="accessibility:toolbar"></div>
+  <a href="https://wa.me/972585553431" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+
+    <script src="/script.js"></script>
+
+    <script id="zappy-mobile-submenu-script">
+    (function() {
+      function initMobileSubmenuToggles() {
+        if (window.innerWidth > 768) {
+          document.querySelectorAll('.mobile-submenu-toggle').forEach(function(btn) { btn.remove(); });
+          document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) { menu.classList.remove('mobile-expanded'); });
+          return;
+        }
+        var items = document.querySelectorAll('.nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu)');
+        items.forEach(function(li) {
+          if (li.querySelector('.mobile-submenu-toggle')) return;
+          var submenu = li.querySelector('.sub-menu');
+          var parentLink = li.querySelector(':scope > a');
+          if (!submenu || !parentLink) return;
+          var toggleBtn = document.createElement('button');
+          toggleBtn.className = 'mobile-submenu-toggle';
+          toggleBtn.setAttribute('aria-label', 'Toggle submenu');
+          toggleBtn.setAttribute('type', 'button');
+          parentLink.insertAdjacentElement('afterend', toggleBtn);
+          toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) {
+              if (menu !== submenu) { menu.classList.remove('mobile-expanded'); var t = menu.parentElement.querySelector('.mobile-submenu-toggle'); if(t) t.classList.remove('expanded'); }
+            });
+            submenu.classList.toggle('mobile-expanded');
+            toggleBtn.classList.toggle('expanded');
+          });
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileSubmenuToggles); }
+      else { initMobileSubmenuToggles(); }
+      var resizeTimer; window.addEventListener('resize', function() { clearTimeout(resizeTimer); resizeTimer = setTimeout(initMobileSubmenuToggles, 250); });
+      // Re-initialize when mobile menu becomes visible (MutationObserver)
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes') {
+            var target = mutation.target;
+            if (target.classList && (target.classList.contains('active') || target.classList.contains('open'))) {
+              setTimeout(initMobileSubmenuToggles, 100);
+            }
+          }
+        });
+      });
+      setTimeout(function() {
+        document.querySelectorAll('.mobile-menu, .nav-menu, #navMenu, nav').forEach(function(menu) {
+          observer.observe(menu, { attributes: true, attributeFilter: ['class', 'style'] });
+        });
+      }, 500);
+    })();
+    </script>
+</body>
+</html>
