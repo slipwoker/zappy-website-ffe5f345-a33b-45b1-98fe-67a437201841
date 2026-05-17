@@ -43,7 +43,7 @@ Information about WCAG compliance and accessibility features.
 - Email: lr12345@013net.net
 - Phone: 058-5553431
 - Phone (tel): tel:0585553431
-- Address: יאטקובסקי אחים 36, פתח תקווה, 4965239, ישראל
+- Address: יאטקובסקי אחים 36, פתח תקווה, מרכז, 4965239, ישראל
 
 ### Contact form
 - URL: https://moshe-pedicure.com/contact
