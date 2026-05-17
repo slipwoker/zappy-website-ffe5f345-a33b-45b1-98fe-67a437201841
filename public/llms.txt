@@ -7,33 +7,33 @@
 ## Pages
 
 ### בית
-https://pedicurist-shikumi.zappy5.app
+https://moshe-pedicure.com
 פדיקור שיקומי מקצועי לבריאות הרגל — טיפול בציפורניים, יבלות, עקב סדוק וסוכרתיים. תוצאות אמיתיות, גישה קלינית, ותור שמחכה לך עכשיו.
 
 ### שירותים
-https://pedicurist-shikumi.zappy5.app/services
+https://moshe-pedicure.com/services
 גלה את מגוון הטיפולים השיקומיים: ציפורניים לאחר ניתוח, פדיקור לסוכרתיים, הסרת יבלות וקרניות. טיפול מותאם אישית שמשלב רפואה ומגע מרפא.
 
 ### אודות
-https://pedicurist-shikumi.zappy5.app/about
+https://moshe-pedicure.com/about
 פדיקוריסט שיקומי מוסמך עם ניסיון קליני עשיר, המשלב ידע רפואי עם יחס אישי חם. כי כל רגל היא סיפור אחר — ואנחנו כאן להקשיב ולרפא.
 
 ### צור קשר
-https://pedicurist-shikumi.zappy5.app/contact
+https://moshe-pedicure.com/contact
 רוצה פדיקור שיקומי עד הבית או בפתח תקווה? צור קשר עכשיו ונתאים לך תור נוח. שירות אישי, מהיר ומקצועי — כי הרגליים שלך לא יכולות לחכות.
 
 ## Legal & Policy
 
 ### Privacy Policy
-https://pedicurist-shikumi.zappy5.app/privacy
+https://moshe-pedicure.com/privacy
 Information about how user data is collected, stored, and protected.
 
 ### Terms & Conditions
-https://pedicurist-shikumi.zappy5.app/terms
+https://moshe-pedicure.com/terms
 Legal terms describing service usage, rights, and policies.
 
 ### Accessibility Statement
-https://pedicurist-shikumi.zappy5.app/accessibility
+https://moshe-pedicure.com/accessibility
 Information about WCAG compliance and accessibility features.
 
 ---
@@ -43,8 +43,8 @@ Information about WCAG compliance and accessibility features.
 - (No contact details configured yet.)
 
 ### Contact form
-- URL: https://pedicurist-shikumi.zappy5.app/contact
-- Endpoint: https://pedicurist-shikumi.zappy5.app/api/email/contact-form
+- URL: https://moshe-pedicure.com/contact
+- Endpoint: https://moshe-pedicure.com/api/email/contact-form
 - Method: POST
 - Content-Type: application/json
 - Fields:
@@ -77,6 +77,6 @@ A rehabilitative pedicure business focused on therapeutic and medical foot care.
 
 # Machine-readable feeds
 
-- Sitemap (XML): https://pedicurist-shikumi.zappy5.app/sitemap.xml
-- Robots: https://pedicurist-shikumi.zappy5.app/robots.txt
-- Flattened page text (for LLMs): https://pedicurist-shikumi.zappy5.app/llms-full.txt
+- Sitemap (XML): https://moshe-pedicure.com/sitemap.xml
+- Robots: https://moshe-pedicure.com/robots.txt
+- Flattened page text (for LLMs): https://moshe-pedicure.com/llms-full.txt
