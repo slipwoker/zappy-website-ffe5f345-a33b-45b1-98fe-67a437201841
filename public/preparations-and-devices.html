@@ -1,0 +1,3653 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <title>משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל</title>
+    <meta name="description" content="משה - פדיקוריסט שיקומי  - משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל">
+    <meta name="keywords" content="">
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Zappy Analytics -->
+<script>
+(function() {
+  'use strict';
+  
+  // Configuration
+  var config = {
+    websiteId: 'ffe5f345-a33b-45b1-98fe-67a437201841',
+    apiUrl: 'https://api.zappy5.com/api/analytics/track',
+    sessionDuration: 30 * 60 * 1000, // 30 minutes
+    visitorDuration: 30 * 24 * 60 * 60 * 1000, // 30 days
+    trackPageViews: true,
+    trackClicks: true,
+    trackFormSubmissions: true
+  };
+  
+  // Generate or retrieve persistent visitor ID (30 days)
+  function getVisitorId() {
+    var visitorKey = 'zappy_visitor_' + config.websiteId;
+    var visitor = null;
+    
+    try {
+      visitor = localStorage.getItem(visitorKey);
+      if (visitor) {
+        var visitorData = JSON.parse(visitor);
+        var now = Date.now();
+        
+        // Check if visitor ID is still valid (30 days)
+        if (now - visitorData.created < config.visitorDuration) {
+          // Update last seen timestamp
+          visitorData.lastSeen = now;
+          localStorage.setItem(visitorKey, JSON.stringify(visitorData));
+          return visitorData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: LocalStorage not available');
+    }
+    
+    // Generate new visitor ID
+    var newVisitorId = 'zv_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      localStorage.setItem(visitorKey, JSON.stringify({
+        id: newVisitorId,
+        created: Date.now(),
+        lastSeen: Date.now()
+      }));
+    } catch (e) {
+      // Continue without local storage
+    }
+    
+    return newVisitorId;
+  }
+  
+  // Generate or retrieve session ID (30 minutes)
+  function getSessionId() {
+    var sessionKey = 'zappy_session_' + config.websiteId;
+    var session = null;
+    
+    try {
+      session = sessionStorage.getItem(sessionKey);
+      if (session) {
+        var sessionData = JSON.parse(session);
+        var now = Date.now();
+        
+        // Check if session is still valid
+        if (now - sessionData.timestamp < config.sessionDuration) {
+          // Update timestamp
+          sessionData.timestamp = now;
+          sessionStorage.setItem(sessionKey, JSON.stringify(sessionData));
+          return sessionData.id;
+        }
+      }
+    } catch (e) {
+      console.warn('Zappy Analytics: SessionStorage not available');
+    }
+    
+    // Generate new session ID
+    var newSessionId = 'zs_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    
+    try {
+      sessionStorage.setItem(sessionKey, JSON.stringify({
+        id: newSessionId,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      // Continue without session storage
+    }
+    
+    return newSessionId;
+  }
+  
+  var visitorId = getVisitorId();
+  var sessionId = getSessionId();
+  
+  // Track an event
+  function trackEvent(eventType, data) {
+    data = data || {};
+    
+    var eventData = {
+      website_id: config.websiteId,
+      event_type: eventType,
+      page_path: window.location.pathname,
+      referrer: document.referrer || 'direct',
+      visitor_id: visitorId,
+      session_id: sessionId,
+      metadata: data
+    };
+    
+    // Use sendBeacon if available (better for page unload events)
+    if (navigator.sendBeacon) {
+      var blob = new Blob([JSON.stringify(eventData)], { type: 'application/json' });
+      navigator.sendBeacon(config.apiUrl, blob);
+    } else {
+      // Fallback to fetch
+      fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(eventData),
+        keepalive: true
+      }).catch(function(error) {
+        console.warn('Zappy Analytics: Failed to track event', error);
+      });
+    }
+  }
+  
+  // Track page view
+  if (config.trackPageViews) {
+    trackEvent('pageview', {
+      title: document.title,
+      url: window.location.href
+    });
+  }
+  
+  // Track clicks on important elements
+  if (config.trackClicks) {
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      
+      // Track button clicks (counted as actions)
+      if (target.tagName === 'BUTTON' || target.closest('button')) {
+        var button = target.tagName === 'BUTTON' ? target : target.closest('button');
+        trackEvent('click', {
+          element: 'button',
+          text: button.textContent.trim().substring(0, 100),
+          id: button.id || null,
+          class: button.className || null
+        });
+      }
+      
+      // Track link clicks (navigation - not counted as actions)
+      else if (target.tagName === 'A' || target.closest('a')) {
+        var link = target.tagName === 'A' ? target : target.closest('a');
+        trackEvent('navigation', {
+          element: 'link',
+          text: link.textContent.trim().substring(0, 100),
+          href: link.href,
+          external: link.hostname !== window.location.hostname
+        });
+      }
+    }, true);
+  }
+  
+  // Track form submissions
+  if (config.trackFormSubmissions) {
+    document.addEventListener('submit', function(e) {
+      var form = e.target;
+      
+      trackEvent('form_submit', {
+        form_id: form.id || null,
+        form_name: form.name || null,
+        form_action: form.action || null,
+        form_method: form.method || 'GET'
+      });
+    }, true);
+  }
+  
+  // Track time on page (send on page unload)
+  var pageLoadTime = Date.now();
+  
+  window.addEventListener('beforeunload', function() {
+    var timeOnPage = Math.floor((Date.now() - pageLoadTime) / 1000); // in seconds
+    
+    trackEvent('page_unload', {
+      time_on_page: timeOnPage,
+      page_path: window.location.pathname
+    });
+  });
+  
+  // Expose tracking function globally for custom events
+  window.zappyAnalytics = {
+    track: trackEvent,
+    getVisitorId: function() { return visitorId; },
+    getSessionId: function() { return sessionId; }
+  };
+  
+})();
+</script>
+<!-- End Zappy Analytics -->
+    <meta property="og:title" content="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל">
+    <meta property="og:description" content="משה - פדיקוריסט שיקומי  - משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל">
+    <meta name="twitter:description" content="משה - פדיקוריסט שיקומי  - משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל">
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"LocalBusiness","@id":"https://moshe-pedicure.com#organization","name":"משה - פדיקוריסט שיקומי ","url":"https://moshe-pedicure.com","description":"A rehabilitative pedicure business focused on therapeutic and medical foot care. The brand likely combines clinical expertise with personal care, addressing foot health issues beyond cosmetic treatment — such as nail problems, calluses, diabetic foot care, or post-injury recovery. The business positions itself at the intersection of health, wellness, and professional foot therapy.","address":{"@type":"PostalAddress","streetAddress":"יאטקובסקי אחים 36, פתח תקווה, מרכז, 4965239, ישראל"},"contactPoint":[{"@type":"ContactPoint","contactType":"customer service","email":"lr12345@013net.net","telephone":"058-5553431"}]},{"@type":"WebSite","@id":"https://moshe-pedicure.com#website","url":"https://moshe-pedicure.com","name":"משה - פדיקוריסט שיקומי ","publisher":{"@id":"https://moshe-pedicure.com#organization"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://moshe-pedicure.com"},{"@type":"ListItem","position":2,"name":"Preparations And Devices","item":"https://moshe-pedicure.com/preparations-and-devices"}]}]}</script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .skip-link { position: absolute; transform: translateY(-200%); left: 0; top: 0; padding: 12px 18px; background: var(--bg-dark, #1a1a1a); color: var(--text-light, #fff); font-weight: 600; border-radius: 0 0 8px 0; z-index: 10000; }
+    .skip-link:focus { transform: none; outline: 2px solid var(--ring, #fff); outline-offset: 2px; }
+    :focus-visible { outline: 2px solid var(--ring, currentColor); outline-offset: 3px; }
+  </style>
+
+
+  
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48x48.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicon-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/assets/favicon-512x512.png">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Cookie Consent -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.umd.js"></script>
+    <!-- Mickidum Accessibility Toolbar -->
+    <script src="https://cdn.jsdelivr.net/gh/mickidum/acc_toolbar/acctoolbar/acctoolbar.min.js"></script>
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:url" content="https://moshe-pedicure.com/preparations-and-devices">
+    <meta property="og:type" content="article">
+    
+    
+    
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:alt" content="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל">
+    <meta property="og:locale" content="en_US">
+    <!-- Twitter Card Meta Tags -->
+    
+    
+    
+    
+    <meta name="twitter:image:alt" content="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל"><style id="zappy-ai-page-styles">.professional-foot-care-hero-section {
+  direction: rtl;
+  background-color: #FAF7F2;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  position: relative;
+  overflow: visible;
+  padding: 140px 24px 80px;
+}
+
+/* Container */
+.professional-foot-care-hero-section .pfch-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 5fr 6fr;
+  gap: 56px;
+  align-items: center;
+  direction: rtl;
+}
+
+/* ── CONTENT COLUMN ── */
+.professional-foot-care-hero-section .pfch-content-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: right;
+  gap: 0;
+}
+
+/* Leaf ornament */
+.professional-foot-care-hero-section .pfch-leaf-ornament {
+  margin-bottom: 16px;
+  line-height: 0;
+}
+
+/* Label */
+.professional-foot-care-hero-section .pfch-label {
+  display: inline-block;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+/* H1 */
+.professional-foot-care-hero-section .pfch-headline {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.6rem, 5vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text-dark);
+  margin: 0 0 20px 0;
+  letter-spacing: -0.01em;
+}
+
+/* Separator line */
+.professional-foot-care-hero-section .pfch-separator {
+  width: 56px;
+  height: 1.5px;
+  background-color: var(--accent);
+  opacity: 0.55;
+  margin-bottom: 20px;
+  margin-inline-start: 0;
+}
+
+/* H3 subtitle */
+.professional-foot-care-hero-section .pfch-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--primary);
+  margin: 0 0 16px 0;
+}
+
+/* Body paragraph */
+.professional-foot-care-hero-section .pfch-body {
+  font-family: 'Assistant', sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text-muted);
+  margin: 0 0 28px 0;
+  max-width: 440px;
+}
+
+/* CTA Block */
+.professional-foot-care-hero-section .pfch-cta-block {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+/* Primary button */
+.professional-foot-care-hero-section .pfch-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--secondary);
+  color: #FFFFFF;
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 100px;
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 8px 28px rgba(196,106,74,0.28);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.professional-foot-care-hero-section .pfch-btn-primary:hover {
+  background: #b35c3e;
+  box-shadow: 0 12px 36px rgba(196,106,74,0.38);
+  transform: translateY(-2px);
+  color: #FFFFFF;
+}
+
+/* Phone link */
+.professional-foot-care-hero-section .pfch-phone-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.professional-foot-care-hero-section .pfch-phone-link:hover {
+  color: var(--primary);
+}
+
+.professional-foot-care-hero-section .pfch-phone-link svg {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* Trust bar */
+.professional-foot-care-hero-section .pfch-trust-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.6);
+  border: 1px solid var(--border-light);
+  border-radius: 50px;
+  backdrop-filter: blur(8px);
+}
+
+.professional-foot-care-hero-section .pfch-trust-item {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.professional-foot-care-hero-section .pfch-trust-divider {
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  background-color: var(--border-light);
+  flex-shrink: 0;
+}
+
+/* ── MEDIA COLUMN ── */
+.professional-foot-care-hero-section .pfch-media-col {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Foot logo decoration */
+.professional-foot-care-hero-section .pfch-foot-logo {
+  position: absolute;
+  top: -16px;
+  inset-inline-end: -16px;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* Image frame */
+.professional-foot-care-hero-section .pfch-image-frame {
+  margin: 0;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.professional-foot-care-hero-section .pfch-hero-img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 5/6;
+  object-fit: cover;
+  border-radius: 28px;
+  border: 2px solid var(--accent);
+  box-shadow: 0 16px 56px rgba(90,80,60,0.16), 0 4px 16px rgba(184,154,99,0.12);
+  display: block;
+  background-color: var(--bg-light);
+}
+
+/* Info card */
+.professional-foot-care-hero-section .pfch-info-card {
+  position: relative;
+  z-index: 2;
+  margin-top: -40px;
+  margin-inline-end: 16px;
+  margin-inline-start: 16px;
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(184,154,99,0.25);
+  border-radius: 18px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(90,80,60,0.10);
+  direction: rtl;
+  text-align: right;
+}
+
+.professional-foot-care-hero-section .pfch-info-icon {
+  flex-shrink: 0;
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+.professional-foot-care-hero-section .pfch-info-text {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Bottom fade transition */
+.professional-foot-care-hero-section .pfch-bottom-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent 0%, #EDE5D8 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── RESPONSIVE: TABLET ── */
+@media (max-width: 1024px) {
+  .professional-foot-care-hero-section .pfch-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 36px;
+  }
+}
+
+/* ── RESPONSIVE: MOBILE ── */
+@media (max-width: 768px) {
+  .professional-foot-care-hero-section {
+    padding: 100px 16px 60px;
+    overflow: hidden;
+  }
+
+  .professional-foot-care-hero-section .pfch-container {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    direction: rtl;
+  }
+
+  /* On mobile: text first, then image */
+  .professional-foot-care-hero-section .pfch-content-col {
+    order: 1;
+  }
+
+  .professional-foot-care-hero-section .pfch-media-col {
+    order: 2;
+  }
+
+  .professional-foot-care-hero-section .pfch-headline {
+    font-size: 2.4rem;
+  }
+
+  .professional-foot-care-hero-section .pfch-body {
+    max-width: 100%;
+  }
+
+  .professional-foot-care-hero-section .pfch-cta-block {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .professional-foot-care-hero-section .pfch-trust-bar {
+    gap: 4px;
+    padding: 12px 14px;
+  }
+
+  .professional-foot-care-hero-section .pfch-trust-item {
+    padding: 0 8px;
+    font-size: 0.78rem;
+  }
+
+  .professional-foot-care-hero-section .pfch-hero-img {
+    aspect-ratio: 4/3;
+    border-radius: 20px;
+  }
+
+  .professional-foot-care-hero-section .pfch-foot-logo {
+    top: -10px;
+    inset-inline-end: 4px;
+  }
+
+  .professional-foot-care-hero-section .pfch-info-card {
+    margin-top: -28px;
+    margin-inline-end: 8px;
+    margin-inline-start: 8px;
+    padding: 14px 16px;
+  }
+
+  .professional-foot-care-hero-section .pfch-bottom-fade {
+    height: 50px;
+  }
+}
+/* ZAPPY_POSTGEN_GUARD_HERO_FONT_CAP:professional-foot-care-hero */
+.hero h1, .hero-section h1, [class*="hero-"] h1, [class~="hero"] h1, .hero .hero-title, .hero-title { font-size: min(var(--display-xl, 6rem), 6rem) !important; line-height: var(--leading-display, 1.05); }
+@media (max-width: 768px) {
+  .hero h1, .hero-section h1, [class*="hero-"] h1, [class~="hero"] h1, .hero .hero-title, .hero-title { font-size: clamp(2rem, 9vw, 3rem) !important; }
+}
+
+
+.professional-foot-care-services-section {
+  position: relative;
+  background-color: #F3EBDD;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  padding: 80px 24px 80px;
+  overflow: visible;
+  direction: rtl;
+}
+
+/* Decorative botanical corner motifs */
+.professional-foot-care-services-section .pfcs-corner-motif {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  width: 120px;
+  height: 120px;
+}
+.professional-foot-care-services-section .pfcs-corner-top-right {
+  top: 0;
+  inset-inline-end: 0;
+}
+.professional-foot-care-services-section .pfcs-corner-bottom-left {
+  bottom: 0;
+  inset-inline-start: 0;
+}
+.professional-foot-care-services-section .pfcs-corner-motif svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Container */
+.professional-foot-care-services-section .pfcs-container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Section Header */
+.professional-foot-care-services-section .pfcs-header {
+  text-align: right;
+  margin-bottom: 52px;
+  max-width: 640px;
+}
+
+.professional-foot-care-services-section .pfcs-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin: 0 0 16px 0;
+}
+
+.professional-foot-care-services-section .pfcs-subtitle {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0 0 24px 0;
+}
+
+.professional-foot-care-services-section .pfcs-header-rule {
+  width: 60px;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.55;
+  border-radius: 2px;
+  margin-inline-start: 0;
+}
+
+/* Services Grid */
+.professional-foot-care-services-section .pfcs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  direction: rtl;
+}
+
+/* Cards */
+.professional-foot-care-services-section .pfcs-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid #F0EAE0;
+  box-shadow: 0 4px 24px rgba(90,80,60,0.08);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.professional-foot-care-services-section .pfcs-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  inset-inline-end: 0;
+  width: 4px;
+  height: 40px;
+  background: var(--primary);
+  opacity: 0.18;
+  border-radius: 0 0 4px 4px;
+}
+
+.professional-foot-care-services-section .pfcs-card:hover {
+  box-shadow: 0 8px 32px rgba(90,80,60,0.14);
+  transform: translateY(-3px);
+}
+
+.professional-foot-care-services-section .pfcs-card-featured {
+  border-color: rgba(184, 154, 99, 0.35);
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 100%);
+}
+
+.professional-foot-care-services-section .pfcs-card-featured::before {
+  background: var(--accent);
+  opacity: 0.35;
+  height: 52px;
+}
+
+/* Card Icon */
+.professional-foot-care-services-section .pfcs-card-icon-wrap {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.professional-foot-care-services-section .pfcs-card-icon-wrap svg {
+  display: block;
+}
+
+/* Card Content */
+.professional-foot-care-services-section .pfcs-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.professional-foot-care-services-section .pfcs-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin: 0;
+  text-align: right;
+}
+
+.professional-foot-care-services-section .pfcs-card-text {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin: 0;
+  text-align: right;
+}
+
+/* Bottom accent separator */
+.professional-foot-care-services-section .pfcs-bottom-separator {
+  position: relative;
+  z-index: 1;
+  margin: 60px auto 0;
+  max-width: 1200px;
+  height: 1px;
+  background: linear-gradient(to left, transparent 0%, rgba(184,154,99,0.35) 30%, rgba(184,154,99,0.35) 70%, transparent 100%);
+}
+
+/* Tablet: 2-column grid */
+@media (min-width: 600px) {
+  .professional-foot-care-services-section .pfcs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .professional-foot-care-services-section .pfcs-card {
+    flex-direction: column;
+  }
+}
+
+/* Desktop: 3-column grid */
+@media (min-width: 1024px) {
+  .professional-foot-care-services-section {
+    padding: 100px 40px 96px;
+  }
+  .professional-foot-care-services-section .pfcs-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .professional-foot-care-services-section .pfcs-header {
+    margin-bottom: 60px;
+  }
+  .professional-foot-care-services-section .pfcs-title {
+    font-size: 2.25rem;
+  }
+  .professional-foot-care-services-section .pfcs-card {
+    padding: 32px 28px;
+  }
+  .professional-foot-care-services-section .pfcs-corner-motif {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+/* Mobile tweaks */
+@media (max-width: 599px) {
+  .professional-foot-care-services-section {
+    padding: 60px 16px 64px;
+  }
+  .professional-foot-care-services-section .pfcs-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px;
+  }
+  .professional-foot-care-services-section .pfcs-card {
+    padding: 22px 18px;
+  }
+  .professional-foot-care-services-section .pfcs-header {
+    margin-bottom: 36px;
+  }
+  .professional-foot-care-services-section .pfcs-corner-motif {
+    width: 80px;
+    height: 80px;
+  }
+  .professional-foot-care-services-section .pfcs-bottom-separator {
+    margin-top: 40px;
+  }
+}
+
+.professional-foot-care-gallery-section {
+  direction: rtl;
+  background-color: #F3EBDD;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  padding: 80px 16px 80px;
+  position: relative;
+  overflow: visible;
+  font-family: 'Assistant', sans-serif;
+}
+
+.professional-foot-care-gallery-section .pfcg-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Section Header ── */
+.professional-foot-care-gallery-section .pfcg-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.professional-foot-care-gallery-section .pfcg-main-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin: 0 0 12px;
+}
+
+.professional-foot-care-gallery-section .pfcg-title-ornament {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 20px;
+}
+
+.professional-foot-care-gallery-section .pfcg-main-desc {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ── Sub-section ── */
+.professional-foot-care-gallery-section .pfcg-subsection {
+  margin-bottom: 16px;
+}
+
+.professional-foot-care-gallery-section .pfcg-sub-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  text-align: right;
+  margin: 0 0 28px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+/* ── Products Grid ── */
+.professional-foot-care-gallery-section .pfcg-products-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  direction: rtl;
+}
+
+/* ── Product Card ── */
+.professional-foot-care-gallery-section .pfcg-product-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid rgba(122, 139, 90, 0.25);
+  box-shadow: 0 4px 24px rgba(90, 80, 60, 0.10);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
+}
+
+.professional-foot-care-gallery-section .pfcg-product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 32px rgba(90, 80, 60, 0.18);
+}
+
+.professional-foot-care-gallery-section .pfcg-product-img-wrap {
+  background: #FAF7F2;
+  width: 100%;
+  aspect-ratio: 4/3;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.professional-foot-care-gallery-section .pfcg-product-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.professional-foot-care-gallery-section .pfcg-product-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.professional-foot-care-gallery-section .pfcg-product-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  text-align: right;
+  margin: 0;
+}
+
+.professional-foot-care-gallery-section .pfcg-product-desc {
+  color: var(--text-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  text-align: right;
+  margin: 0;
+}
+
+.professional-foot-care-gallery-section .pfcg-product-meta {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: flex-start;
+  text-align: right;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.professional-foot-care-gallery-section .pfcg-meta-label {
+  color: var(--primary);
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.professional-foot-care-gallery-section .pfcg-meta-value {
+  color: var(--text-muted);
+}
+
+.professional-foot-care-gallery-section .pfcg-product-price {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-align: right;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.professional-foot-care-gallery-section .pfcg-btn-order {
+  display: inline-block;
+  background: var(--secondary);
+  color: #FFFFFF;
+  text-decoration: none;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 9px 20px;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 8px;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  align-self: flex-start;
+}
+
+.professional-foot-care-gallery-section .pfcg-btn-order:hover {
+  background: #A85A3C;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(196, 106, 74, 0.35);
+}
+
+/* ── Section Divider ── */
+.professional-foot-care-gallery-section .pfcg-section-divider {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  margin: 56px 0;
+  direction: rtl;
+}
+
+.professional-foot-care-gallery-section .pfcg-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.45;
+}
+
+.professional-foot-care-gallery-section .pfcg-divider-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--accent);
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  text-align: center;
+  padding: 0 8px;
+}
+
+/* ── Equipment Grid ── */
+.professional-foot-care-gallery-section .pfcg-equipment-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  direction: rtl;
+}
+
+/* ── Equipment Card ── */
+.professional-foot-care-gallery-section .pfcg-equipment-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid rgba(122, 139, 90, 0.25);
+  box-shadow: 0 4px 24px rgba(90, 80, 60, 0.10);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 0;
+}
+
+.professional-foot-care-gallery-section .pfcg-equipment-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 32px rgba(90, 80, 60, 0.18);
+}
+
+.professional-foot-care-gallery-section .pfcg-equipment-img-wrap {
+  background: #FAF7F2;
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.professional-foot-care-gallery-section .pfcg-equipment-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.professional-foot-care-gallery-section .pfcg-equipment-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.professional-foot-care-gallery-section .pfcg-equipment-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  text-align: right;
+  margin: 0;
+}
+
+.professional-foot-care-gallery-section .pfcg-equipment-use {
+  color: var(--text-dark);
+  font-size: 1rem;
+  line-height: 1.7;
+  text-align: right;
+  margin: 0;
+  font-weight: 500;
+}
+
+.professional-foot-care-gallery-section .pfcg-equipment-fit {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  text-align: right;
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(122, 139, 90, 0.08);
+  border-radius: 8px;
+  border-inline-start: 3px solid var(--primary);
+}
+
+.professional-foot-care-gallery-section .pfcg-equipment-benefits {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  text-align: right;
+  margin: 0;
+}
+
+.professional-foot-care-gallery-section .pfcg-equipment-price {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  text-align: right;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.professional-foot-care-gallery-section .pfcg-btn-equipment {
+  display: inline-block;
+  background: transparent;
+  color: var(--secondary);
+  text-decoration: none;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 9px 20px;
+  border-radius: 8px;
+  border: 1.5px solid var(--secondary);
+  text-align: center;
+  margin-top: 8px;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  align-self: flex-start;
+}
+
+.professional-foot-care-gallery-section .pfcg-btn-equipment:hover {
+  background: var(--secondary);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(196, 106, 74, 0.30);
+}
+
+/* ── TABLET ── */
+@media (min-width: 600px) {
+  .professional-foot-care-gallery-section .pfcg-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .professional-foot-care-gallery-section .pfcg-equipment-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── DESKTOP ── */
+@media (min-width: 1024px) {
+  .professional-foot-care-gallery-section {
+    padding: 100px 40px 100px;
+  }
+  .professional-foot-care-gallery-section .pfcg-main-title {
+    font-size: 2rem;
+  }
+  .professional-foot-care-gallery-section .pfcg-products-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .professional-foot-care-gallery-section .pfcg-equipment-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+}
+
+/* ── MOBILE RESET ── */
+@media (max-width: 599px) {
+  .professional-foot-care-gallery-section {
+    padding: 60px 16px 60px;
+  }
+  .professional-foot-care-gallery-section .pfcg-products-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .professional-foot-care-gallery-section .pfcg-equipment-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .professional-foot-care-gallery-section .pfcg-header {
+    margin-bottom: 36px;
+  }
+  .professional-foot-care-gallery-section .pfcg-section-divider {
+    margin: 36px 0;
+  }
+  .professional-foot-care-gallery-section .pfcg-btn-order,
+  .professional-foot-care-gallery-section .pfcg-btn-equipment {
+    align-self: stretch;
+    text-align: center;
+  }
+}
+
+.professional-foot-care-benefits-section {
+  background-color: #F0EAE0;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  padding: 80px 24px 100px;
+  position: relative;
+  direction: rtl;
+  overflow: visible;
+}
+
+.professional-foot-care-benefits-section .pfcb-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Two-column grid: 7:5 ratio */
+.professional-foot-care-benefits-section .pfcb-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  align-items: start;
+  direction: rtl;
+}
+
+@media (min-width: 768px) {
+  .professional-foot-care-benefits-section .pfcb-grid {
+    grid-template-columns: 7fr 5fr;
+    gap: 56px;
+  }
+}
+
+/* ─── Main Column ─── */
+.professional-foot-care-benefits-section .pfcb-heading-block {
+  margin-block-end: 36px;
+}
+
+.professional-foot-care-benefits-section .pfcb-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin: 0 0 14px 0;
+  text-align: right;
+}
+
+.professional-foot-care-benefits-section .pfcb-heading-rule {
+  width: 60px;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0.55;
+  margin-block-end: 18px;
+  margin-inline-start: auto;
+  border-radius: 2px;
+}
+
+.professional-foot-care-benefits-section .pfcb-intro {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text-muted);
+  text-align: right;
+  margin: 0;
+  max-width: 560px;
+  margin-inline-start: auto;
+}
+
+/* ─── Benefits List ─── */
+.professional-foot-care-benefits-section .pfcb-benefits-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 600px) {
+  .professional-foot-care-benefits-section .pfcb-benefits-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 0 24px;
+  }
+}
+
+@media (max-width: 599px) {
+  .professional-foot-care-benefits-section .pfcb-benefits-list {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.professional-foot-care-benefits-section .pfcb-benefit-item {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 0 14px;
+  align-items: start;
+  padding: 16px 0;
+  border-block-end: 1px solid var(--border-light);
+  direction: rtl;
+}
+
+.professional-foot-care-benefits-section .pfcb-benefit-item:last-child,
+.professional-foot-care-benefits-section .pfcb-benefit-item:nth-last-child(2):nth-child(odd) {
+  border-block-end: none;
+}
+
+@media (min-width: 600px) {
+  .professional-foot-care-benefits-section .pfcb-benefit-item:nth-last-child(-n+2) {
+    border-block-end: none;
+  }
+}
+
+.professional-foot-care-benefits-section .pfcb-benefit-icon {
+  width: 36px;
+  height: 36px;
+  background-color: var(--bg-light);
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--primary);
+  margin-block-start: 2px;
+}
+
+.professional-foot-care-benefits-section .pfcb-benefit-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+
+.professional-foot-care-benefits-section .pfcb-benefit-title {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.4;
+}
+
+.professional-foot-care-benefits-section .pfcb-benefit-desc {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* ─── Clinic Panel ─── */
+.professional-foot-care-benefits-section .pfcb-panel-col {
+  position: sticky;
+  top: 120px;
+}
+
+@media (max-width: 767px) {
+  .professional-foot-care-benefits-section .pfcb-panel-col {
+    position: static;
+    top: auto;
+  }
+}
+
+.professional-foot-care-benefits-section .pfcb-clinic-panel {
+  background: #FFFFFF;
+  border: 2px solid var(--primary);
+  border-radius: 20px;
+  padding: 32px 28px;
+  box-shadow: 0 8px 32px rgba(90, 80, 60, 0.12);
+  direction: rtl;
+  text-align: right;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-icon-wrap {
+  margin-block-end: 18px;
+  display: inline-block;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-dark);
+  margin: 0 0 14px 0;
+  text-align: right;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-text {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+  margin: 0 0 22px 0;
+  text-align: right;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-features {
+  list-style: none;
+  margin: 0 0 28px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-features li {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  line-height: 1.5;
+  text-align: right;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-features li svg {
+  flex-shrink: 0;
+}
+
+/* CTA Button */
+.professional-foot-care-benefits-section .pfcb-panel-cta {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  color: var(--secondary);
+  border: 2px solid var(--secondary);
+  border-radius: 50px;
+  padding: 13px 26px;
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.22s ease, color 0.22s ease;
+  width: 100%;
+  justify-content: center;
+  margin-block-end: 20px;
+  cursor: pointer;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-cta:hover {
+  background: var(--secondary);
+  color: #FFFFFF;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-cta svg {
+  transition: transform 0.2s ease;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-cta:hover svg {
+  transform: translateX(-4px);
+}
+
+/* Badge */
+.professional-foot-care-benefits-section .pfcb-panel-badge {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  background-color: #FAF7F2;
+  border: 1px solid var(--border-light);
+  border-radius: 50px;
+  padding: 8px 16px;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: right;
+  justify-content: center;
+}
+
+.professional-foot-care-benefits-section .pfcb-panel-badge svg {
+  flex-shrink: 0;
+}
+
+/* ─── Mobile Overrides ─── */
+@media (max-width: 767px) {
+  .professional-foot-care-benefits-section {
+    padding: 60px 16px 72px;
+  }
+
+  .professional-foot-care-benefits-section .pfcb-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px;
+  }
+
+  .professional-foot-care-benefits-section .pfcb-heading {
+    font-size: 1.65rem;
+  }
+
+  .professional-foot-care-benefits-section .pfcb-benefits-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .professional-foot-care-benefits-section .pfcb-benefit-item {
+    border-block-end: 1px solid var(--border-light) !important;
+  }
+
+  .professional-foot-care-benefits-section .pfcb-benefit-item:last-child {
+    border-block-end: none !important;
+  }
+
+  .professional-foot-care-benefits-section .pfcb-clinic-panel {
+    padding: 24px 20px;
+  }
+}
+
+.professional-foot-care-testimonials-section {
+  position: relative;
+  overflow: visible;
+  background-color: var(--bg-dark);
+  background-image:
+    radial-gradient(ellipse at 10% 20%, rgba(184,154,99,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 80%, rgba(122,139,90,0.07) 0%, transparent 55%),
+    linear-gradient(180deg, #2B2926 0%, #1E1C19 100%);
+  color: var(--text-light);
+  padding: 80px 0 100px;
+  direction: rtl;
+  box-shadow: inset 0 0 0 1px rgba(184,154,99,0.12);
+}
+
+/* Inner container */
+.professional-foot-care-testimonials-section .pfct-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* Two-column grid: right col (testimonials ~55%) / left col (FAQ ~45%) */
+.professional-foot-care-testimonials-section .pfct-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 56px;
+  direction: rtl;
+}
+
+@media (min-width: 900px) {
+  .professional-foot-care-testimonials-section .pfct-grid {
+    grid-template-columns: 6fr 5fr;
+    gap: 64px;
+    align-items: start;
+  }
+}
+
+/* Column header */
+.professional-foot-care-testimonials-section .pfct-col-header {
+  margin-bottom: 36px;
+}
+
+.professional-foot-care-testimonials-section .pfct-section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-light);
+  margin: 0 0 14px 0;
+  text-align: right;
+}
+
+.professional-foot-care-testimonials-section .pfct-title-rule {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ─── TESTIMONIALS GRID ─────────────────────────────────── */
+.professional-foot-care-testimonials-section .pfct-testimonials-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 600px) {
+  .professional-foot-care-testimonials-section .pfct-testimonials-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .professional-foot-care-testimonials-section .pfct-card-wide {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Testimonial card */
+.professional-foot-care-testimonials-section .pfct-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(184,154,99,0.28);
+  border-radius: 18px;
+  padding: 28px 26px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  transition: border-color 0.25s ease, background 0.25s ease;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+}
+
+.professional-foot-care-testimonials-section .pfct-card:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(184,154,99,0.52);
+}
+
+.professional-foot-care-testimonials-section .pfct-card-wide {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 28px;
+}
+
+@media (max-width: 599px) {
+  .professional-foot-care-testimonials-section .pfct-card-wide {
+    flex-direction: column;
+  }
+}
+
+.professional-foot-care-testimonials-section .pfct-card-top {
+  flex: 1;
+}
+
+/* Stars */
+.professional-foot-care-testimonials-section .pfct-stars {
+  color: var(--accent);
+  font-size: 1rem;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+  text-align: right;
+}
+
+/* Quote */
+.professional-foot-care-testimonials-section .pfct-quote {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.professional-foot-care-testimonials-section .pfct-quote p {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-light);
+  opacity: 0.88;
+  text-align: right;
+  margin: 0;
+  font-style: italic;
+}
+
+/* Card footer */
+.professional-foot-care-testimonials-section .pfct-card-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid rgba(184,154,99,0.18);
+}
+
+.professional-foot-care-testimonials-section .pfct-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(184,154,99,0.18);
+  border: 1.5px solid rgba(184,154,99,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+
+.professional-foot-care-testimonials-section .pfct-person {
+  text-align: right;
+}
+
+.professional-foot-care-testimonials-section .pfct-person-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-light);
+  margin: 0 0 2px 0;
+  text-align: right;
+}
+
+.professional-foot-care-testimonials-section .pfct-person-label {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  display: block;
+  text-align: right;
+}
+
+/* ─── FAQ LIST ──────────────────────────────────────────── */
+.professional-foot-care-testimonials-section .pfct-faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.professional-foot-care-testimonials-section .pfct-faq-item {
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(184,154,99,0.18);
+}
+
+.professional-foot-care-testimonials-section .pfct-faq-item-last {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.professional-foot-care-testimonials-section .pfct-faq-q-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+  justify-content: flex-end;
+}
+
+.professional-foot-care-testimonials-section .pfct-faq-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.professional-foot-care-testimonials-section .pfct-faq-q {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-light);
+  margin: 0;
+  text-align: right;
+  flex: 1;
+}
+
+.professional-foot-care-testimonials-section .pfct-faq-a {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-light);
+  opacity: 0.78;
+  margin: 0;
+  padding-inline-end: 32px;
+  text-align: right;
+}
+
+/* ─── BOTTOM DIVIDER ────────────────────────────────────── */
+.professional-foot-care-testimonials-section .pfct-divider-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.professional-foot-care-testimonials-section .pfct-divider-wrapper svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── MOBILE ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .professional-foot-care-testimonials-section {
+    padding: 56px 0 90px;
+  }
+  .professional-foot-care-testimonials-section .pfct-inner {
+    padding: 0 16px;
+  }
+  .professional-foot-care-testimonials-section .pfct-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .professional-foot-care-testimonials-section .pfct-section-title {
+    font-size: 1.65rem;
+  }
+  .professional-foot-care-testimonials-section .pfct-testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+  .professional-foot-care-testimonials-section .pfct-card-wide {
+    grid-column: auto;
+    flex-direction: column;
+  }
+  .professional-foot-care-testimonials-section .pfct-faq-a {
+    padding-inline-end: 0;
+  }
+}
+
+.professional-foot-care-cta-section {
+  direction: rtl;
+  background-color: #F0EAE0;
+  background-image: linear-gradient(180deg, #FAF7F2 0%, #F0EAE0 100%);
+  color: var(--text-dark);
+  padding: 80px 24px 96px;
+  position: relative;
+  overflow: visible;
+}
+
+.professional-foot-care-cta-section .pfcc-container {
+  max-width: 760px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Panel ── */
+.professional-foot-care-cta-section .pfcc-panel {
+  position: relative;
+  background: #FDFAF6;
+  border: 1.5px solid var(--primary);
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(90, 80, 60, 0.10), 0 2px 8px rgba(90,80,60,0.06);
+  padding: 56px 60px 52px;
+  text-align: center;
+  overflow: hidden;
+}
+
+/* ── Corner decorations ── */
+.professional-foot-care-cta-section .pfcc-corner {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+  z-index: 0;
+}
+.professional-foot-care-cta-section .pfcc-corner--tr {
+  top: 14px;
+  inset-inline-end: 14px;
+  border-top: 1.5px solid var(--accent);
+  border-inline-end: 1.5px solid var(--accent);
+  border-radius: 0 6px 0 0;
+  opacity: 0.55;
+}
+.professional-foot-care-cta-section .pfcc-corner--tl {
+  top: 14px;
+  inset-inline-start: 14px;
+  border-top: 1.5px solid var(--accent);
+  border-inline-start: 1.5px solid var(--accent);
+  border-radius: 6px 0 0 0;
+  opacity: 0.55;
+}
+.professional-foot-care-cta-section .pfcc-corner--br {
+  bottom: 14px;
+  inset-inline-end: 14px;
+  border-bottom: 1.5px solid var(--accent);
+  border-inline-end: 1.5px solid var(--accent);
+  border-radius: 0 0 6px 0;
+  opacity: 0.55;
+}
+.professional-foot-care-cta-section .pfcc-corner--bl {
+  bottom: 14px;
+  inset-inline-start: 14px;
+  border-bottom: 1.5px solid var(--accent);
+  border-inline-start: 1.5px solid var(--accent);
+  border-radius: 0 0 0 6px;
+  opacity: 0.55;
+}
+
+/* ── Leaf ornament ── */
+.professional-foot-care-cta-section .pfcc-ornament {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Heading ── */
+.professional-foot-care-cta-section .pfcc-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--text-dark);
+  margin: 0 0 20px;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+/* ── Separator rule ── */
+.professional-foot-care-cta-section .pfcc-rule {
+  width: 56px;
+  height: 1.5px;
+  background: var(--accent);
+  opacity: 0.5;
+  margin: 0 auto 24px;
+  border-radius: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Body text ── */
+.professional-foot-care-cta-section .pfcc-body {
+  font-family: 'Assistant', sans-serif;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin: 0 auto 40px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── CTA block ── */
+.professional-foot-care-cta-section .pfcc-cta-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 36px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── WhatsApp button ── */
+.professional-foot-care-cta-section .pfcc-btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--secondary);
+  color: #FFFFFF;
+  font-family: 'Assistant', sans-serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 18px 40px;
+  border-radius: 100px;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 18px rgba(196, 106, 74, 0.28);
+  transition: background 0.22s ease, box-shadow 0.22s ease, transform 0.18s ease;
+  white-space: nowrap;
+}
+.professional-foot-care-cta-section .pfcc-btn-whatsapp:hover {
+  background: #B35C3C;
+  box-shadow: 0 6px 24px rgba(196, 106, 74, 0.38);
+  transform: translateY(-2px);
+}
+.professional-foot-care-cta-section .pfcc-btn-whatsapp:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(196, 106, 74, 0.22);
+}
+
+/* ── Sub-label ── */
+.professional-foot-care-cta-section .pfcc-sub {
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0;
+  text-align: center;
+}
+
+/* ── Audience bar ── */
+.professional-foot-care-cta-section .pfcc-audience-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border-light);
+  position: relative;
+  z-index: 1;
+}
+
+.professional-foot-care-cta-section .pfcc-audience-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Assistant', sans-serif;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.professional-foot-care-cta-section .pfcc-audience-item svg {
+  color: var(--primary);
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
+.professional-foot-care-cta-section .pfcc-audience-dot {
+  color: var(--border-light);
+  font-size: 1rem;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .professional-foot-care-cta-section {
+    padding: 56px 16px 72px;
+  }
+
+  .professional-foot-care-cta-section .pfcc-panel {
+    padding: 40px 24px 36px;
+    border-radius: 16px;
+  }
+
+  .professional-foot-care-cta-section .pfcc-heading {
+    font-size: 1.6rem;
+  }
+
+  .professional-foot-care-cta-section .pfcc-btn-whatsapp {
+    font-size: 1rem;
+    padding: 16px 28px;
+    width: 100%;
+    max-width: 340px;
+  }
+
+  .professional-foot-care-cta-section .pfcc-body {
+    font-size: 1rem;
+    margin-bottom: 32px;
+  }
+
+  .professional-foot-care-cta-section .pfcc-br {
+    display: none;
+  }
+
+  .professional-foot-care-cta-section .pfcc-audience-bar {
+    gap: 10px 8px;
+  }
+
+  .professional-foot-care-cta-section .pfcc-audience-dot {
+    display: none;
+  }
+
+  .professional-foot-care-cta-section .pfcc-audience-item {
+    width: 100%;
+    justify-content: center;
+  }
+}</style>
+    <link rel="stylesheet" href="/styles.css">
+
+    <style id="zappy-dropdown-submenu-styles">
+      /* ========== DESKTOP DROPDOWN SUBMENU STYLES ========== */
+      /* Base styles for dropdown submenus - parent must be positioned */
+      .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { position: relative; }
+      /* Submenu base - hidden by default */
+      .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { display: block !important; position: absolute !important; top: 100%; left: 0; min-width: 220px; background: white; border-radius: 8px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); padding: 8px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: all 0.3s ease; z-index: 1000; list-style: none; pointer-events: none; }
+      /* CRITICAL: Desktop hover styles to show dropdown */
+      .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Submenu item styling */
+      .sub-menu li { list-style: none; margin: 0; padding: 0; }
+      .sub-menu a { display: block !important; padding: 10px 16px !important; color: var(--text-dark, #333) !important; font-weight: 500; text-decoration: none; white-space: nowrap; transition: background-color 0.2s; }
+      .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+      [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 10px !important; padding-right: 28px !important; }
+      .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+      .sub-menu a:hover { background-color: #f5f5f5; }
+      /* RTL (Hebrew/Arabic) dropdown positioning */
+      [dir="rtl"] .nav-menu .sub-menu, [dir="rtl"] nav .sub-menu, [dir="rtl"] .navbar .sub-menu, html[lang="he"] .nav-menu .sub-menu, html[lang="he"] nav .sub-menu, html[lang="he"] .navbar .sub-menu, html[lang="ar"] .nav-menu .sub-menu, html[lang="ar"] nav .sub-menu, html[lang="ar"] .navbar .sub-menu { left: auto !important; right: 0 !important; }
+      /* Hide empty dropdown menus (exclude catalog sub-menus that use <a> children instead of <li>) */
+      .sub-menu:empty, .sub-menu:not(:has(li:not(.zappy-hidden-menu-item))):not(:has(> a)), .sub-menu:not(:has(li)):not(:has(> a)) { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+      /* Desktop: show submenu on Menu Group hover */
+      li:has(.menu-group-title):hover > .sub-menu { opacity: 1 !important; visibility: visible !important; transform: translateY(0) !important; pointer-events: auto !important; }
+      /* Menu Group title styling */
+      .nav-menu > li > .menu-group-title, #navMenu > li > .menu-group-title { display: inline-block; padding: 0.5rem 1rem; cursor: default; user-select: none; }
+      
+      /* ========== MOBILE SUBMENU STYLES ========== */
+      @media (max-width: 768px) {
+        .nav-menu .sub-menu, nav .sub-menu, .navbar .sub-menu, #navMenu .sub-menu { position: static !important; transform: none !important; box-shadow: none !important; background: transparent !important; max-height: 0; overflow: hidden; opacity: 0; visibility: hidden; transition: max-height 0.3s ease, opacity 0.3s ease; padding: 0 !important; border-radius: 0 !important; }
+        .navbar .sub-menu.mobile-expanded, .nav-menu .sub-menu.mobile-expanded, #navMenu .sub-menu.mobile-expanded { max-height: none !important; overflow-y: visible !important; opacity: 1 !important; visibility: visible !important; padding: 8px 0 8px 16px !important; }
+        [dir="rtl"] .sub-menu.mobile-expanded, html[lang="he"] .sub-menu.mobile-expanded { padding: 8px 16px 8px 0 !important; }
+        /* Disable hover behavior on mobile */
+        .nav-menu li:hover > .sub-menu, nav li:hover > .sub-menu, .navbar li:hover > .sub-menu, #navMenu li:hover > .sub-menu { opacity: 0; visibility: hidden; pointer-events: none; }
+        .nav-menu li > .sub-menu.mobile-expanded, nav li > .sub-menu.mobile-expanded, .navbar li > .sub-menu.mobile-expanded, #navMenu li > .sub-menu.mobile-expanded { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; }
+        .nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu) { display: flex !important; flex-wrap: wrap !important; align-items: center !important; position: relative !important; min-height: 44px !important; }
+        .nav-menu li:has(.sub-menu) > a, nav li:has(.sub-menu) > a, .navbar li:has(.sub-menu) > a, #navMenu li:has(.sub-menu) > a { flex: 1 !important; min-width: 0 !important; }
+        .nav-menu li:has(.sub-menu) > .menu-group-title, nav li:has(.sub-menu) > .menu-group-title, .navbar li:has(.sub-menu) > .menu-group-title, #navMenu li:has(.sub-menu) > .menu-group-title { flex: 1 !important; min-width: 0 !important; padding: 0 !important; line-height: inherit !important; }
+        .nav-menu li:has(.sub-menu) > .sub-menu, nav li:has(.sub-menu) > .sub-menu, .navbar li:has(.sub-menu) > .sub-menu, #navMenu li:has(.sub-menu) > .sub-menu { flex-basis: 100% !important; width: 100% !important; }
+        .nav-menu li:has(.sub-menu) > a [class*="chevron"], .nav-menu li:has(.sub-menu) > a [class*="arrow"], .nav-menu li:has(.sub-menu) > a .fa-chevron-down, .nav-menu li:has(.sub-menu) > a .fa-angle-down, nav li:has(.sub-menu) > a [class*="chevron"], nav li:has(.sub-menu) > a [class*="arrow"], #navMenu li:has(.sub-menu) > a [class*="chevron"], #navMenu li:has(.sub-menu) > a [class*="arrow"] { display: none !important; visibility: hidden !important; }
+        .mobile-submenu-toggle { display: flex !important; align-items: center !important; justify-content: center !important; width: 44px !important; height: auto !important; background: transparent !important; border: none !important; cursor: pointer !important; color: var(--text-dark) !important; position: static !important; flex-shrink: 0 !important; align-self: stretch !important; z-index: 2 !important; padding: 0 !important; margin: 0 !important; }
+        .mobile-submenu-toggle::after { content: '' !important; width: 0 !important; height: 0 !important; border-left: 6px solid transparent !important; border-right: 6px solid transparent !important; border-top: 7px solid currentColor !important; transition: transform 0.3s ease !important; }
+        .mobile-submenu-toggle.expanded::after { transform: rotate(180deg) !important; }
+        .sub-menu a { padding: 10px 0 !important; display: block !important; color: var(--text-dark) !important; white-space: normal !important; }
+        .sub-menu .zappy-nav-child > a { padding-left: 28px !important; font-size: 0.9em !important; opacity: 0.85 !important; }
+        [dir="rtl"] .sub-menu .zappy-nav-child > a, html[lang="he"] .sub-menu .zappy-nav-child > a, html[lang="ar"] .sub-menu .zappy-nav-child > a { padding-left: 0 !important; padding-right: 28px !important; }
+        .sub-menu .zappy-nav-parent > a { font-weight: 600 !important; }
+        .nav-menu.active, #navMenu.active { max-width: 100vw !important; overflow-x: hidden !important; box-sizing: border-box !important; }
+        .navbar .sub-menu li a, nav.navbar .sub-menu li a, .zappy-products-dropdown .sub-menu a { color: var(--text-dark) !important; }
+      }
+      @media (min-width: 769px) { .mobile-submenu-toggle { display: none !important; } }
+    </style>
+
+    <style id="zappy-widget-visibility">
+      html[dir="rtl"] .whatsapp-float { right: 20px !important; left: auto !important; }
+      html[dir="ltr"] .whatsapp-float, html:not([dir]) .whatsapp-float { left: 20px !important; right: auto !important; }
+      html[dir="rtl"] #mic-access-tool-general-button, html[dir="rtl"] .mic-access-tool-general-button,
+      html[dir="rtl"] #mic-init-access-tool .mic-access-tool-general-button,
+      html[dir="rtl"] #mic-init-access-tool #mic-access-tool-general-button,
+      html[dir="rtl"] ._access-icon { left: 20px !important; right: auto !important; }
+      html[dir="ltr"] #mic-access-tool-general-button, html[dir="ltr"] .mic-access-tool-general-button,
+      html[dir="ltr"] #mic-init-access-tool .mic-access-tool-general-button,
+      html[dir="ltr"] #mic-init-access-tool #mic-access-tool-general-button,
+      html[dir="ltr"] ._access-icon,
+      html:not([dir]) #mic-access-tool-general-button, html:not([dir]) .mic-access-tool-general-button,
+      html:not([dir]) #mic-init-access-tool .mic-access-tool-general-button,
+      html:not([dir]) #mic-init-access-tool #mic-access-tool-general-button,
+      html:not([dir]) ._access-icon { right: 20px !important; left: auto !important; }
+      @media (max-width: 768px) { .whatsapp-float { display: flex !important; } }
+      @media (min-width: 769px) { .whatsapp-float { display: flex !important; } }
+      @media (max-width: 768px) {
+        #mic-access-tool-general-button, .mic-access-tool-general-button,
+        #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+        ._access-icon { display: flex !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; }
+        #mic-access-tool-box.opened-mic-access-tool, .mic-access-tool-box.opened-mic-access-tool,
+        #mic-init-access-tool #mic-access-tool-box.opened-mic-access-tool {
+          visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;
+        }
+      }
+      @media (min-width: 769px) {
+        #mic-access-tool-general-button, .mic-access-tool-general-button,
+        #mic-init-access-tool .mic-access-tool-general-button, #mic-init-access-tool #mic-access-tool-general-button,
+        ._access-icon { display: flex !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; }
+        #mic-access-tool-box.opened-mic-access-tool, .mic-access-tool-box.opened-mic-access-tool,
+        #mic-init-access-tool #mic-access-tool-box.opened-mic-access-tool {
+          visibility: visible !important; opacity: 1 !important; pointer-events: auto !important;
+        }
+      }
+    </style>
+</head>
+<body>
+<a class="skip-link" href="#main">דלג לתוכן הראשי</a>
+  <nav class="navbar" dir="rtl">
+  <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+    <svg class="hamburger-icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+    <svg class="close-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" style="display: none;">
+      <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+    </svg>
+  </button>
+
+  <button class="phone-header-btn" data-phone="0585553431" aria-label="Call">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+    </svg>
+  </button>
+
+  <div class="nav-container">
+    <div class="nav-right-group"><div class="nav-brand">
+      <a href="/" class="logo-link"><img class="logo" src="/assets/site-------image-1.webp" alt="משה - פדיקוריסט שיקומי "></a>
+    </div><ul class="nav-menu" id="navMenu"><li><a href="/">בית</a></li><li><a href="/services">שירותים</a></li><li><a href="/about">אודות</a></li><li><a href="/preparations-and-devices" class="nav-link">תכשירים ומכשירים</a></li></ul></div>
+
+    
+
+    <div class="nav-cta-container">
+      <a href="/contact" class="nav-cta-btn">צור קשר</a>
+    </div>
+  </div>
+</nav>
+<script>
+
+// Navbar Mobile Menu Toggle and Contrast Fix
+(function() {
+  // Use 'load' event instead of 'DOMContentLoaded' to ensure we run AFTER all other scripts
+  window.addEventListener('load', function() {
+    
+    // FIX MOBILE BUTTON CONTRAST
+    // Detect navbar background color and apply contrasting color to mobile buttons
+    const navbar = document.querySelector('.navbar, nav, header');
+    if (!navbar) {
+      console.log('[Navbar] Navbar element not found');
+      return;
+    }
+    
+    // DECLARE VARIABLES EARLY to avoid Temporal Dead Zone errors
+    // These are used in multiple places below
+    let mobileToggle = document.getElementById('mobileToggle') ||
+                       document.querySelector('.mobile-toggle') ||
+                       document.querySelector('.hamburger') ||
+                       document.querySelector('.hamburger-menu') ||
+                       document.querySelector('.menu-toggle') ||
+                       document.querySelector('.burger-menu') ||
+                       document.querySelector('[aria-label="Menu"]') ||
+                       document.querySelector('[aria-label="תפריט"]');
+    
+    const phoneBtn = document.querySelector('.phone-header-btn');
+    
+    const computedStyle = window.getComputedStyle(navbar);
+    let bgColor = computedStyle.backgroundColor;
+    
+    console.log('[Navbar] Initial navbar background:', bgColor);
+    
+    // Check if background is transparent or rgba with 0 alpha
+    const isTransparent = bgColor === 'transparent' || 
+                         bgColor === 'rgba(0, 0, 0, 0)' ||
+                         (bgColor.startsWith('rgba') && bgColor.includes(', 0)'));
+    
+    if (isTransparent) {
+      // Check for background-image or gradient
+      const bgImage = computedStyle.backgroundImage;
+      if (bgImage && bgImage !== 'none') {
+        console.log('[Navbar] Navbar has background image/gradient, using dark text');
+        bgColor = 'rgb(240, 240, 240)'; // Assume light background
+      } else {
+        // Transparent navbar - check body background
+        const bodyBg = window.getComputedStyle(document.body).backgroundColor;
+        console.log('[Navbar] Navbar transparent, using body background:', bodyBg);
+        bgColor = bodyBg;
+      }
+    }
+    
+    // Calculate luminance to determine if background is light or dark
+    const rgb = bgColor.match(/\d+/g);
+    if (rgb && rgb.length >= 3) {
+      const r = parseInt(rgb[0]);
+      const g = parseInt(rgb[1]);
+      const b = parseInt(rgb[2]);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      
+      // Mobile button colors are set by Claude's AI-generated CSS (same as .nav-menu a)
+      // No dynamic color overrides needed - colors come from the generated navbar CSS
+      console.log('[Navbar] Mobile button colors preserved from Claude CSS (luminance:', luminance.toFixed(2) + ')');
+      
+      // FIX ICON SIZES - Ensure SVGs are properly sized and visible
+      // INJECT CRITICAL CSS TO OVERRIDE ANY CONFLICTING RULES
+      const criticalCSS = document.createElement('style');
+      criticalCSS.id = 'zappy-mobile-nav-fix';
+      const htmlLang = document.documentElement.lang || 'en';
+      const htmlDir = document.documentElement.dir || 'ltr';
+      // Check both dir attribute AND lang for RTL detection
+      // dir="rtl" is the most reliable indicator
+      const isRTL = htmlDir === 'rtl' || htmlLang === 'he' || htmlLang === 'ar';
+      
+      criticalCSS.textContent = `
+        /* Hide mobile buttons on desktop, show only on mobile */
+        @media (min-width: 769px) {
+          .mobile-toggle,
+          .phone-header-btn {
+            display: none !important;
+          }
+        }
+        
+        /* Show and position mobile buttons correctly on mobile */
+        @media (max-width: 768px) {
+          .navbar,
+          nav.navbar {
+            min-height: 70px !important;
+          }
+
+          .mobile-toggle,
+          .phone-header-btn {
+            position: absolute !important;
+            top: 0 !important;
+            bottom: 0 !important;
+            margin-top: auto !important;
+            margin-bottom: auto !important;
+            transform: none !important;
+            z-index: 1001 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 50% !important;
+            border: none !important;
+            cursor: pointer !important;
+            padding: 6px !important;
+            background: none !important;
+            color: var(--nav-text, var(--text-dark)) !important;
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: transparent !important;
+          }
+
+          html[data-zappy-site-type="ecommerce"] .phone-header-btn,
+          body[data-zappy-site-type="ecommerce"] .phone-header-btn,
+          html[data-zappy-site-type="ecommerce"] header .phone-header-btn,
+          html[data-zappy-site-type="ecommerce"] nav .phone-header-btn {
+            display: none !important;
+            visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            min-width: 0 !important;
+            overflow: hidden !important;
+          }
+          
+          /* LTR positioning (default): hamburger LEFT, phone RIGHT */
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .mobile-toggle,
+          html[dir="ltr"] .mobile-toggle {
+            left: 12px !important;
+            right: auto !important;
+          }
+          html:not([dir="rtl"]):not([lang="he"]):not([lang="ar"]) .phone-header-btn,
+          html[dir="ltr"] .phone-header-btn {
+            right: 12px !important;
+            left: auto !important;
+          }
+          
+          /* RTL positioning: hamburger RIGHT, phone LEFT */
+          html[dir="rtl"] .mobile-toggle,
+          html[lang="he"] .mobile-toggle,
+          html[lang="ar"] .mobile-toggle {
+            right: 12px !important;
+            left: auto !important;
+          }
+          html[dir="rtl"] .phone-header-btn,
+          html[lang="he"] .phone-header-btn,
+          html[lang="ar"] .phone-header-btn {
+            left: 12px !important;
+            right: auto !important;
+          }
+          
+          /* CRITICAL: Ensure nav-container has min-height on mobile */
+          /* All children are positioned absolutely/fixed on mobile, so height:auto collapses to 0 */
+          .nav-container {
+            min-height: 70px !important;
+            position: relative !important;
+          }
+          
+          /* Ensure SVG icons are properly sized and inherit color */
+          .mobile-toggle svg,
+          .phone-header-btn svg {
+            width: 24px !important;
+            height: 24px !important;
+            /* Don't force display - let JavaScript control hamburger/close toggle */
+          }
+          
+          /* Reset nav-cta-container on mobile - remove desktop box-shadow/padding */
+          /* that creates a visible ghost box when CTA button is hidden */
+          .nav-cta-container {
+            box-shadow: none !important;
+            padding: 0 !important;
+          }
+          
+          /* Hide nav-cta-container entirely on mobile when there's no lang-switcher */
+          /* (only the CTA button is inside, and it's hidden on mobile) */
+          .nav-cta-container:not(:has(.lang-switcher)) {
+            display: none !important;
+          }
+          
+          /* CRITICAL: Prevent hero image fade gradient from bleeding over headline text */
+          /* The .image-fade-gradient has bottom: -30px (extends below parent) */
+          /* On mobile stacked layout, this overlaps the h1 text below the image */
+          .hero-image-column {
+            overflow: hidden !important;
+          }
+          .image-fade-gradient {
+            bottom: 0 !important;
+          }
+          
+          /* Hide desktop language switcher on mobile - hamburger menu handles it */
+          /* High specificity to override stored CSS */
+          .lang-switcher,
+          .nav-cta-container .lang-switcher,
+          .nav-container .lang-switcher,
+          .navbar .lang-switcher,
+          .navbar .nav-cta-container .lang-switcher {
+            display: none !important;
+          }
+        }
+      `;
+      
+      // Remove existing fix if present and inject new one
+      const existing = document.getElementById('zappy-mobile-nav-fix');
+      if (existing) existing.remove();
+      document.head.appendChild(criticalCSS);
+      
+      console.log('[Navbar] Critical CSS injected for mobile nav positioning');
+      
+      // ONLY apply inline positioning styles on mobile viewport
+      // On desktop, the CSS handles hiding these buttons with display: none
+      // Inline styles were breaking desktop layout by overriding CSS
+      const isMobileViewport = window.innerWidth <= 768;
+      
+      if (mobileToggle) {
+        // Icon sizing applies to all viewports for consistency
+        const hamburgerIcon = mobileToggle.querySelector('.hamburger-icon');
+        const closeIcon = mobileToggle.querySelector('.close-icon');
+        
+        if (hamburgerIcon) {
+          hamburgerIcon.style.setProperty('width', '24px', 'important');
+          hamburgerIcon.style.setProperty('height', '24px', 'important');
+          hamburgerIcon.style.setProperty('display', 'block', 'important'); // Show hamburger by default
+        }
+        if (closeIcon) {
+          closeIcon.style.setProperty('width', '24px', 'important');
+          closeIcon.style.setProperty('height', '24px', 'important');
+          closeIcon.style.setProperty('display', 'none', 'important'); // Hide close icon by default
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          mobileToggle.style.setProperty('position', 'absolute', 'important');
+          mobileToggle.style.setProperty('top', '0', 'important');
+          mobileToggle.style.setProperty('bottom', '0', 'important');
+          mobileToggle.style.setProperty('margin-top', 'auto', 'important');
+          mobileToggle.style.setProperty('margin-bottom', 'auto', 'important');
+          mobileToggle.style.setProperty('transform', 'none', 'important');
+          mobileToggle.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          
+          console.log('[Navbar] Mobile toggle positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          mobileToggle.style.removeProperty('position');
+          mobileToggle.style.removeProperty('top');
+          mobileToggle.style.removeProperty('transform');
+          mobileToggle.style.removeProperty('z-index');
+          mobileToggle.style.removeProperty('left');
+          mobileToggle.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared mobile toggle inline positioning');
+        }
+      }
+      
+      if (phoneBtn) {
+        // Icon sizing applies to all viewports
+        const phoneIcon = phoneBtn.querySelector('svg');
+        if (phoneIcon) {
+          phoneIcon.style.width = '24px';
+          phoneIcon.style.height = '24px';
+          phoneIcon.setAttribute('width', '24');
+          phoneIcon.setAttribute('height', '24');
+        }
+        
+        // ONLY set positioning inline styles on mobile
+        if (isMobileViewport) {
+          phoneBtn.style.setProperty('position', 'absolute', 'important');
+          phoneBtn.style.setProperty('top', '0', 'important');
+          phoneBtn.style.setProperty('bottom', '0', 'important');
+          phoneBtn.style.setProperty('margin-top', 'auto', 'important');
+          phoneBtn.style.setProperty('margin-bottom', 'auto', 'important');
+          phoneBtn.style.setProperty('transform', 'none', 'important');
+          phoneBtn.style.setProperty('z-index', '1001', 'important');
+          
+          // Clear any inline left/right so CSS can take over based on html[dir]
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          
+          console.log('[Navbar] Phone button positioning applied (mobile viewport)');
+        } else {
+          // On desktop, clear any positioning styles to let CSS handle it
+          phoneBtn.style.removeProperty('position');
+          phoneBtn.style.removeProperty('top');
+          phoneBtn.style.removeProperty('transform');
+          phoneBtn.style.removeProperty('z-index');
+          phoneBtn.style.removeProperty('left');
+          phoneBtn.style.removeProperty('right');
+          console.log('[Navbar] Desktop viewport - cleared phone button inline positioning');
+        }
+      }
+    } else {
+      console.log('[Navbar] Could not parse background color:', bgColor);
+    }
+    
+    // MOBILE MENU TOGGLE
+    // Re-query in case DOM changed (mobileToggle already declared at top of function)
+    mobileToggle = document.getElementById('mobileToggle') ||
+                   document.querySelector('.mobile-toggle') ||
+                   document.querySelector('.hamburger') ||
+                   document.querySelector('.hamburger-menu') ||
+                   document.querySelector('.menu-toggle') ||
+                   document.querySelector('.burger-menu') ||
+                   document.querySelector('[aria-label="Menu"]') ||
+                   document.querySelector('[aria-label="תפריט"]');
+    
+    // EXPANDED SEARCH: Find nav menu by ID or class
+    const navMenu = document.getElementById('navMenu') ||
+                  document.querySelector('.nav-menu') ||
+                  document.querySelector('.nav-links') ||
+                  document.querySelector('nav ul:not(.submenu)');
+    
+    if (!mobileToggle || !navMenu) {
+      console.log('[Navbar] Mobile toggle or menu not found:', { toggle: !!mobileToggle, menu: !!navMenu });
+      return;
+    }
+    
+    // Ensure navMenu has ID for CSS targeting
+    if (!navMenu.id) {
+      navMenu.id = 'navMenu';
+    }
+    
+    console.log('[Navbar] Initializing mobile menu...');
+    
+    // Remove any existing event listeners by cloning the button
+    const newToggle = mobileToggle.cloneNode(true);
+    mobileToggle.parentNode.replaceChild(newToggle, mobileToggle);
+    
+    // Toggle menu handler (shared by click and touchend)
+    function handleToggle(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const hamburgerIcon = newToggle.querySelector('.hamburger-icon');
+      const closeIcon = newToggle.querySelector('.close-icon');
+      const isActive = navMenu.classList.contains('active');
+      
+      if (isActive) {
+        // Close menu
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed');
+      } else {
+        // Open menu
+        navMenu.classList.add('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'none', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'block', 'important');
+        document.body.style.overflow = 'hidden';
+        console.log('[Navbar] Menu opened');
+      }
+    }
+    
+    // Use click for desktop/emulation and touchend as iOS Safari fallback.
+    // Prevent double-fire with a timestamp guard.
+    var lastToggleTime = 0;
+    function guardedToggle(e) {
+      var now = Date.now();
+      if (now - lastToggleTime < 300) return;
+      lastToggleTime = now;
+      handleToggle(e);
+    }
+    
+    newToggle.addEventListener('click', guardedToggle);
+    newToggle.addEventListener('touchend', guardedToggle);
+    
+    // Close menu when clicking nav links (but NOT dropdown toggles)
+    const navLinks = navMenu.querySelectorAll('a');
+    navLinks.forEach(function(link) {
+      link.addEventListener('click', function() {
+        // Don't close if it's a dropdown child (unless it's a real navigation link)
+        if (this.getAttribute('href') === '#') return;
+        
+        const hamburgerIcon = newToggle.querySelector('.hamburger-icon');
+        const closeIcon = newToggle.querySelector('.close-icon');
+        
+        navMenu.classList.remove('active');
+        if (hamburgerIcon) hamburgerIcon.style.setProperty('display', 'block', 'important');
+        if (closeIcon) closeIcon.style.setProperty('display', 'none', 'important');
+        document.body.style.overflow = '';
+        console.log('[Navbar] Menu closed (link clicked)');
+      });
+    });
+    
+    // DROPDOWN MENU TOGGLE (for mobile and touch devices)
+    var dropdownToggles = navMenu.querySelectorAll('.dropdown-toggle');
+    dropdownToggles.forEach(function(toggle) {
+      toggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var parent = this.closest('.nav-dropdown');
+        if (!parent) return;
+        
+        // Close other open dropdowns at the same level
+        var siblings = parent.parentNode.querySelectorAll('.nav-dropdown.open');
+        siblings.forEach(function(sib) {
+          if (sib !== parent) sib.classList.remove('open');
+        });
+        
+        parent.classList.toggle('open');
+        console.log('[Navbar] Dropdown toggled:', parent.classList.contains('open') ? 'open' : 'closed');
+      });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.nav-dropdown')) {
+        var openDropdowns = document.querySelectorAll('.nav-dropdown.open');
+        openDropdowns.forEach(function(dd) { dd.classList.remove('open'); });
+      }
+    });
+    
+    console.log('[Navbar] Dropdown handlers initialized for ' + dropdownToggles.length + ' dropdowns');
+    
+    // Phone button functionality (phoneBtn already declared at top of function)
+    if (phoneBtn) {
+      phoneBtn.addEventListener('click', function() {
+        // Get phone number from placeholder in page or use default
+        const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+        const phoneNumber = phoneLinks.length > 0 
+          ? phoneLinks[0].getAttribute('href').replace('tel:', '')
+          : '058-5553431';
+        
+        window.location.href = 'tel:' + phoneNumber;
+        console.log('[Navbar] Phone button clicked');
+      });
+    }
+    
+    console.log('[Navbar] Mobile menu initialized successfully');
+    
+    // WhatsApp button visibility is now controlled via CSS (siteSettings).
+    // No JS-based desktop hiding — the button is visible on both mobile and desktop by default.
+  });
+})();
+
+</script>
+  
+  <main id="main" class="blog-page ai-generated-page"><section class="professional-foot-care-hero-section" data-layout-spec="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל-hero" dir="rtl" data-hero-type="fullscreen-scrim">
+  <div class="pfch-container">
+
+    <!-- Content Column -->
+    <div class="pfch-content-col">
+
+      <!-- Decorative leaf ornament -->
+      <div class="pfch-leaf-ornament" aria-hidden="true">
+        <svg data-no-icon-edit="true" aria-hidden="true" width="72" height="32" viewBox="0 0 72 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M36 28 C28 20, 12 18, 8 10 C14 6, 24 10, 36 20 C48 10, 58 6, 64 10 C60 18, 44 20, 36 28Z" fill="none" stroke="#B89A63" stroke-width="1.2" opacity="0.6"></path>
+          <path d="M36 28 L36 4" stroke="#B89A63" stroke-width="1" opacity="0.5"></path>
+          <circle cx="36" cy="4" r="2" fill="#B89A63" opacity="0.5"></circle>
+        </svg>
+      </div>
+
+      <!-- Label -->
+      <span class="pfch-label">פדיקור שיקומי מקצועי</span>
+
+      <!-- H1 Headline -->
+      <h1 class="pfch-headline">משה –<br>מומחה לבריאות<br>כף הרגל</h1>
+
+      <!-- Thin separator line -->
+      <div class="pfch-separator" aria-hidden="true"></div>
+
+      <!-- Supporting subtitle -->
+      <h3 class="pfch-subtitle">טיפול אישי, מקצועי ומכבד – לכל גיל ומצב רפואי</h3>
+
+      <!-- Body paragraph -->
+      <p class="pfch-body">מציע פתרונות מקצועיים לכאבי רגליים, ציפורניים, יבלות וטיפול מיוחד לחולי סוכרת ולאחר פציעות. כי בריאות הרגל היא בריאות הגוף כולו.</p>
+
+      <!-- CTA Block -->
+      <div class="pfch-cta-block">
+        <a href="https://wa.me/[whatsapp_handle]" class="pfch-btn-primary" target="_blank" rel="noopener">
+          <svg data-element-type="icon" data-icon-type="svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"></path>
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.943l6.272-1.447A11.95 11.95 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.37l-.36-.213-3.724.859.882-3.622-.234-.372A9.818 9.818 0 1112 21.818z"></path>
+          </svg>
+          שלח הודעה בוואטסאפ
+        </a>
+        <a href="tel:[business_phone]" class="pfch-phone-link">
+          <svg data-element-type="icon" data-icon-type="svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.46-.46a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"></path>
+          </svg>
+          [business_phone]
+        </a>
+      </div>
+
+      <!-- Trust Bar -->
+      <div class="pfch-trust-bar">
+        <span class="pfch-trust-item">טיפולים אישיים</span>
+        <span class="pfch-trust-divider" aria-hidden="true"></span>
+        <span class="pfch-trust-item">תכשירים מקצועיים</span>
+        <span class="pfch-trust-divider" aria-hidden="true"></span>
+        <span class="pfch-trust-item">ציוד לקליניקות</span>
+      </div>
+
+    </div>
+
+    <!-- Media Column -->
+    <div class="pfch-media-col">
+
+      <!-- Decorative foot logo -->
+      <div class="pfch-foot-logo" aria-hidden="true">
+        <svg data-no-icon-edit="true" aria-hidden="true" width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="22" cy="28" rx="10" ry="14" stroke="#7A8B5A" stroke-width="1.5" fill="none"></ellipse>
+          <circle cx="15" cy="13" r="2.2" stroke="#7A8B5A" stroke-width="1.2" fill="none"></circle>
+          <circle cx="19" cy="11" r="2.2" stroke="#7A8B5A" stroke-width="1.2" fill="none"></circle>
+          <circle cx="23" cy="10.5" r="2.2" stroke="#7A8B5A" stroke-width="1.2" fill="none"></circle>
+          <circle cx="27" cy="11.5" r="2" stroke="#7A8B5A" stroke-width="1.2" fill="none"></circle>
+          <circle cx="30" cy="13.5" r="1.7" stroke="#7A8B5A" stroke-width="1.2" fill="none"></circle>
+        </svg>
+      </div>
+
+      <!-- Hero Image -->
+      <figure class="pfch-image-frame">
+        <img data-hero-bg="true" data-context="A warm, professional rehabilitative pedicure treatment session. A caring male practitioner in a clean white clinic coat gently examines or treats a patient foot on a padded treatment chair. Soft warm lighting, clean clinical environment with warm wood tones. The mood is calm, dignified, and reassuring — not sterile or cold. Warm cream and sage green color palette." width="600" height="680" src="/assets/section-hero-professional-foot-care-hero-image-1.webp" alt="משה, פדיקוריסט שיקומי, מטפל בכף רגל של מטופל בסביבה חמה ומקצועית" class="pfch-hero-img">
+      </figure>
+
+      <!-- Info Card -->
+      <div class="pfch-info-card">
+        <svg data-element-type="icon" data-icon-type="svg" class="pfch-info-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <p class="pfch-info-text">עמוד זה מרכז עבורך פתרונות מקצועיים לכף הרגל – מטיפול אישי ועד מוצרים לשימוש בקליניקות</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom fade transition -->
+  <div class="pfch-bottom-fade" aria-hidden="true"></div>
+
+</section>
+
+<section class="professional-foot-care-services-section" data-layout-spec="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל-services" dir="rtl">
+
+  <!-- Decorative botanical corner motif top-right -->
+  <div class="pfcs-corner-motif pfcs-corner-top-right" aria-hidden="true">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M110,10 Q90,30 70,50 Q60,60 50,80" stroke="#7A8B5A" stroke-width="1.2" fill="none" opacity="0.18"></path>
+      <path d="M100,10 Q85,25 72,45" stroke="#B89A63" stroke-width="1" fill="none" opacity="0.15"></path>
+      <ellipse cx="80" cy="32" rx="10" ry="6" transform="rotate(-35 80 32)" fill="none" stroke="#7A8B5A" stroke-width="1" opacity="0.14"></ellipse>
+      <ellipse cx="65" cy="52" rx="9" ry="5" transform="rotate(-45 65 52)" fill="none" stroke="#7A8B5A" stroke-width="1" opacity="0.12"></ellipse>
+      <ellipse cx="90" cy="22" rx="8" ry="4" transform="rotate(-20 90 22)" fill="none" stroke="#B89A63" stroke-width="1" opacity="0.12"></ellipse>
+    </svg>
+  </div>
+
+  <!-- Decorative botanical corner motif bottom-left -->
+  <div class="pfcs-corner-motif pfcs-corner-bottom-left" aria-hidden="true">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10,110 Q30,90 50,70 Q60,60 80,40" stroke="#7A8B5A" stroke-width="1.2" fill="none" opacity="0.18"></path>
+      <path d="M20,110 Q35,95 48,75" stroke="#B89A63" stroke-width="1" fill="none" opacity="0.15"></path>
+      <ellipse cx="40" cy="88" rx="10" ry="6" transform="rotate(-35 40 88)" fill="none" stroke="#7A8B5A" stroke-width="1" opacity="0.14"></ellipse>
+      <ellipse cx="55" cy="68" rx="9" ry="5" transform="rotate(-45 55 68)" fill="none" stroke="#7A8B5A" stroke-width="1" opacity="0.12"></ellipse>
+      <ellipse cx="30" cy="98" rx="8" ry="4" transform="rotate(-20 30 98)" fill="none" stroke="#B89A63" stroke-width="1" opacity="0.12"></ellipse>
+    </svg>
+  </div>
+
+  <div class="pfcs-container">
+
+    <!-- Section Header -->
+    <header class="pfcs-header">
+      <h2 class="pfcs-title">הטיפולים שלנו</h2>
+      <p class="pfcs-subtitle">כל טיפול מותאם אישית לצרכים הייחודיים של כף הרגל שלך — בגישה מקצועית, עדינה ומכבדת. אנו מתמחים בטיפול שיקומי ורפואי לכל גיל ומצב בריאותי.</p>
+      <div class="pfcs-header-rule" aria-hidden="true"></div>
+    </header>
+
+    <!-- Services Grid -->
+    <div class="pfcs-grid">
+
+      <!-- Card 1: Dry heels -->
+      <article class="pfcs-card">
+        <div class="pfcs-card-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" aria-hidden="true" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="36">
+            <path d="M20 6 C12 6 7 12 7 18 C7 25 12 32 20 34 C28 32 33 25 33 18 C33 12 28 6 20 6Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"></path>
+            <path d="M14 22 Q17 18 20 22 Q23 26 26 22" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"></path>
+            <path d="M16 16 Q18 14 20 16" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"></path>
+          </svg>
+        </div>
+        <div class="pfcs-card-content">
+          <h3 class="pfcs-card-title">טיפול ביובש וסדקים בעקב</h3>
+          <p class="pfcs-card-text">עור יבש וסדוק בעקב עלול לגרום לכאב ואי נוחות בהליכה. הטיפול כולל ניקוי עדין, לחות עמוקה ועיסוי שיקומי להחזרת גמישות העור ומניעת סדקים חוזרים.</p>
+        </div>
+      </article>
+
+      <!-- Card 2: Hard skin removal -->
+      <article class="pfcs-card">
+        <div class="pfcs-card-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" aria-hidden="true" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="36">
+            <rect x="10" y="8" width="20" height="26" rx="4" stroke="currentColor" stroke-width="1.6" fill="none"></rect>
+            <path d="M15 16 L25 16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+            <path d="M15 21 L25 21" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+            <path d="M15 26 L21 26" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"></path>
+            <path d="M27 28 L33 34" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+            <circle cx="26" cy="27" r="2.5" stroke="currentColor" stroke-width="1.4" fill="none"></circle>
+          </svg>
+        </div>
+        <div class="pfcs-card-content">
+          <h3 class="pfcs-card-title">הסרת עור קשה ויבלות</h3>
+          <p class="pfcs-card-text">הצטברות עור קשה בכפות הרגליים גורמת ללחץ ולכאב בעמידה ובהליכה. בעזרת כלים מקצועיים ומגע מיומן, מסירים את השכבות הקשות בצורה בטוחה ומדויקת.</p>
+        </div>
+      </article>
+
+      <!-- Card 3: Thick/problematic nails -->
+      <article class="pfcs-card">
+        <div class="pfcs-card-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" aria-hidden="true" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="36">
+            <path d="M8 28 L10 14 Q12 8 18 8 L22 8 Q28 8 30 14 L32 28 Q32 32 20 32 Q8 32 8 28Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"></path>
+            <path d="M12 22 Q16 20 20 22 Q24 24 28 22" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"></path>
+            <path d="M20 8 L20 32" stroke="currentColor" stroke-width="1" fill="none" opacity="0.4"></path>
+          </svg>
+        </div>
+        <div class="pfcs-card-content">
+          <h3 class="pfcs-card-title">טיפול בציפורניים עבות ובעייתיות</h3>
+          <p class="pfcs-card-text">ציפורניים עבות, שבורות או חודרניות דורשות טיפול מקצועי ומדויק. אנו מטפלים בכל סוגי הציפורניים הבעייתיות בזהירות ובמיומנות, תוך הקפדה על היגיינה מלאה.</p>
+        </div>
+      </article>
+
+      <!-- Card 4: Diabetic foot care -->
+      <article class="pfcs-card pfcs-card-featured">
+        <div class="pfcs-card-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" aria-hidden="true" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="36">
+            <path d="M20 8 L22 14 L28 14 L23 18 L25 24 L20 20 L15 24 L17 18 L12 14 L18 14 Z" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linejoin="round"></path>
+            <circle cx="20" cy="20" r="13" stroke="currentColor" stroke-width="1.4" fill="none" stroke-dasharray="3 2"></circle>
+          </svg>
+        </div>
+        <div class="pfcs-card-content">
+          <h3 class="pfcs-card-title">טיפול בכף רגל סוכרתית</h3>
+          <p class="pfcs-card-text">טיפול מותאם ומוקפד במיוחד לחולי סוכרת, תוך הקפדה על עדינות מרבית, כלים מעוקרים ומעקב קפדני. הבטיחות שלך היא בראש סדר העדיפויות שלנו בכל שלב.</p>
+        </div>
+      </article>
+
+      <!-- Card 5: Nail fungus -->
+      <article class="pfcs-card">
+        <div class="pfcs-card-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" aria-hidden="true" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="36">
+            <path d="M12 30 Q10 24 12 18 Q14 12 20 10 Q26 12 28 18 Q30 24 28 30" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"></path>
+            <path d="M14 30 L26 30" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+            <path d="M17 22 Q20 18 23 22" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linecap="round"></path>
+            <circle cx="20" cy="16" r="2" stroke="currentColor" stroke-width="1.2" fill="none"></circle>
+          </svg>
+        </div>
+        <div class="pfcs-card-content">
+          <h3 class="pfcs-card-title">טיפול בפטרת הציפורניים</h3>
+          <p class="pfcs-card-text">פטרת הציפורניים היא מצב נפוץ הדורש טיפול מקצועי ועקבי. אנו מציעים פרוטוקול טיפול מותאם הכולל ניקוי, עיבוד מקצועי והנחיות לטיפול ביתי להמשך.</p>
+        </div>
+      </article>
+
+      <!-- Card 6: Home / clinic rehabilitative pedicure -->
+      <article class="pfcs-card">
+        <div class="pfcs-card-icon-wrap">
+          <svg data-element-type="icon" data-icon-type="svg" aria-hidden="true" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="36">
+            <path d="M20 8 L8 18 L8 34 L16 34 L16 26 L24 26 L24 34 L32 34 L32 18 Z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linejoin="round"></path>
+            <path d="M15 34 L15 28 L25 28 L25 34" stroke="currentColor" stroke-width="1.2" fill="none"></path>
+            <path d="M17 18 L23 18 L23 24 L17 24 Z" stroke="currentColor" stroke-width="1.2" fill="none"></path>
+          </svg>
+        </div>
+        <div class="pfcs-card-content">
+          <h3 class="pfcs-card-title">פדיקור שיקומי — בבית או בקליניקה</h3>
+          <p class="pfcs-card-text">לנוחיותך, הטיפול זמין הן בקליניקה המאובזרת והן בביתך. מתאים במיוחד לקשישים, לאחר ניתוח, או לכל מי שמתקשה בניידות — אנחנו מגיעים אליך.</p>
+        </div>
+      </article>
+
+    </div>
+    <!-- End Services Grid -->
+
+  </div>
+  <!-- End Container -->
+
+  <!-- Bottom accent separator -->
+  <div class="pfcs-bottom-separator" aria-hidden="true"></div>
+
+</section>
+
+<section class="professional-foot-care-gallery-section" data-layout-spec="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל-gallery" dir="rtl">
+  <div class="pfcg-container">
+
+    <!-- Section Header -->
+    <div class="pfcg-header">
+      <h2 class="pfcg-main-title">מוצרים ומכשירים מקצועיים</h2>
+      <div class="pfcg-title-ornament" aria-hidden="true">
+        <svg width="60" height="12" viewBox="0 0 60 12" fill="none" xmlns="http://www.w3.org/2000/svg" data-no-icon-edit="true" aria-hidden="true">
+          <line x1="0" y1="6" x2="22" y2="6" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.5"></line>
+          <circle cx="30" cy="6" r="3" fill="var(--accent)" fill-opacity="0.6"></circle>
+          <line x1="38" y1="6" x2="60" y2="6" stroke="var(--accent)" stroke-width="1" stroke-opacity="0.5"></line>
+        </svg>
+      </div>
+      <p class="pfcg-main-desc">תכשירים ומכשירים שנבחרו בקפידה לטיפול שיקומי ומניעתי בכף הרגל — לשימוש ביתי ומקצועי כאחד. כל מוצר נבחר על סמך ניסיון קליני ועמידה בסטנדרטים הגבוהים ביותר של בריאות הרגל.</p>
+    </div>
+
+    <!-- Sub-section 1: Products -->
+    <div class="pfcg-subsection">
+      <h3 class="pfcg-sub-title">תכשירים לטיפול ברגליים</h3>
+      <div class="pfcg-products-grid">
+
+        <!-- Product Card 1 -->
+        <article class="pfcg-product-card">
+          <div class="pfcg-product-img-wrap">
+            <img data-context="Professional rehabilitative pedicure cream product bottle on a warm cream background, clinical yet elegant packaging with olive green and warm earth tones, soft studio lighting, medical-grade foot care product for diabetic and therapeutic use" width="300" height="220" src="/assets/section-gallery-professional-foot-care-gallery-image-1.webp" alt="קרם שיקומי לכפות הרגליים">
+          </div>
+          <div class="pfcg-product-body">
+            <h3 class="pfcg-product-title">קרם שיקומי לכפות הרגליים</h3>
+            <p class="pfcg-product-desc">קרם מרוכז לחות עמוקה המשקם עור סדוק ויבש, מתאים לטיפול יומיומי ולאחר פדיקור שיקומי.</p>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">למי מתאים:</span>
+              <span class="pfcg-meta-value">עור יבש, סדקים בעקבים, חולי סוכרת</span>
+            </div>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">גודל אריזה:</span>
+              <span class="pfcg-meta-value">100 מ"ל / 250 מ"ל</span>
+            </div>
+            <div class="pfcg-product-price">₪89 – ₪149</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-order" target="_blank" rel="noopener">להזמנה בוואטסאפ</a>
+          </div>
+        </article>
+
+        <!-- Product Card 2 -->
+        <article class="pfcg-product-card">
+          <div class="pfcg-product-img-wrap">
+            <img data-context="Antifungal nail treatment serum with dropper, clinical packaging in warm beige and olive tones, medical foot care product on soft background, professional podiatry treatment" width="300" height="220" src="/assets/section-gallery-professional-foot-care-gallery-image-2.webp" alt="סרום לטיפול בפטריות ציפורניים">
+          </div>
+          <div class="pfcg-product-body">
+            <h3 class="pfcg-product-title">סרום לטיפול בפטריות ציפורניים</h3>
+            <p class="pfcg-product-desc">פתרון מקצועי לטיפול ומניעת פטריות ציפורניים, בעל חדירה עמוקה לרקמת הציפורן.</p>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">למי מתאים:</span>
+              <span class="pfcg-meta-value">ציפורניים פגועות, מניעה שוטפת</span>
+            </div>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">גודל אריזה:</span>
+              <span class="pfcg-meta-value">15 מ"ל</span>
+            </div>
+            <div class="pfcg-product-price">₪120</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-order" target="_blank" rel="noopener">להזמנה בוואטסאפ</a>
+          </div>
+        </article>
+
+        <!-- Product Card 3 -->
+        <article class="pfcg-product-card">
+          <div class="pfcg-product-img-wrap">
+            <img data-context="Exfoliating foot scrub in a warm-toned jar, natural ingredients visible, clinical and natural aesthetic, olive green label, therapeutic foot care product for calluses and rough skin" width="300" height="220" src="/assets/section-gallery-professional-foot-care-gallery-image-3.webp" alt="פילינג רפואי לכפות הרגליים">
+          </div>
+          <div class="pfcg-product-body">
+            <h3 class="pfcg-product-title">פילינג רפואי לכפות הרגליים</h3>
+            <p class="pfcg-product-desc">פילינג עדין המסיר עור מת ויבלות, מכיל חומצות פירות ומינרלים להחלקת העור.</p>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">למי מתאים:</span>
+              <span class="pfcg-meta-value">יבלות, קרניות, עור מת</span>
+            </div>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">גודל אריזה:</span>
+              <span class="pfcg-meta-value">200 מ"ל</span>
+            </div>
+            <div class="pfcg-product-price">₪95</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-order" target="_blank" rel="noopener">להזמנה בוואטסאפ</a>
+          </div>
+        </article>
+
+        <!-- Product Card 4 -->
+        <article class="pfcg-product-card">
+          <div class="pfcg-product-img-wrap">
+            <img data-context="Diabetic foot protection cream with clinical packaging, warm beige and olive color palette, medical grade moisturizer for sensitive diabetic skin, professional podiatry product" width="300" height="220" src="/assets/section-gallery-professional-foot-care-gallery-image-4.webp" alt="קרם הגנה לרגל סוכרתית">
+          </div>
+          <div class="pfcg-product-body">
+            <h3 class="pfcg-product-title">קרם הגנה לרגל סוכרתית</h3>
+            <p class="pfcg-product-desc">פורמולה ייחודית שפותחה לצרכים המיוחדים של חולי סוכרת — ללא בישום, ללא צבעים, עם pH מאוזן.</p>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">למי מתאים:</span>
+              <span class="pfcg-meta-value">חולי סוכרת, עור רגיש, קשישים</span>
+            </div>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">גודל אריזה:</span>
+              <span class="pfcg-meta-value">150 מ"ל</span>
+            </div>
+            <div class="pfcg-product-price">מחירון לקליניקות</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-order" target="_blank" rel="noopener">להזמנה בוואטסאפ</a>
+          </div>
+        </article>
+
+        <!-- Product Card 5 -->
+        <article class="pfcg-product-card">
+          <div class="pfcg-product-img-wrap">
+            <img data-context="Ingrown toenail treatment gel with precision applicator, clinical packaging, warm neutral tones, medical podiatry product for nail correction and pain relief" width="300" height="220" src="/assets/section-gallery-professional-foot-care-gallery-image-5.webp" alt="ג" ל="" לטיפול="" בציפורן="" חודרנית'="">
+          </div>
+          <div class="pfcg-product-body">
+            <h3 class="pfcg-product-title">ג'ל לטיפול בציפורן חודרנית</h3>
+            <p class="pfcg-product-desc">מרכך ומרגיע את הרקמה הדלקתית סביב הציפורן, מסייע בהפחתת כאב ומניעת הישנות.</p>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">למי מתאים:</span>
+              <span class="pfcg-meta-value">ציפורן חודרנית, דלקת, כאב מקומי</span>
+            </div>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">גודל אריזה:</span>
+              <span class="pfcg-meta-value">20 מ"ל</span>
+            </div>
+            <div class="pfcg-product-price">₪110</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-order" target="_blank" rel="noopener">להזמנה בוואטסאפ</a>
+          </div>
+        </article>
+
+        <!-- Product Card 6 -->
+        <article class="pfcg-product-card">
+          <div class="pfcg-product-img-wrap">
+            <img data-context="Foot odor and hygiene spray in clinical packaging, olive and warm beige tones, antibacterial foot deodorant spray for professional podiatry use, clean medical aesthetic" width="300" height="220" src="/assets/section-gallery-professional-foot-care-gallery-image-6.webp" alt="ספריי היגיינה ומניעת ריח לרגליים">
+          </div>
+          <div class="pfcg-product-body">
+            <h3 class="pfcg-product-title">ספריי היגיינה ומניעת ריח</h3>
+            <p class="pfcg-product-desc">ספריי אנטיבקטריאלי לשמירה על היגיינת הרגל, מתאים לשימוש יומיומי ולאחר טיפולים.</p>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">למי מתאים:</span>
+              <span class="pfcg-meta-value">ריח רגליים, הזעת יתר, היגיינה שוטפת</span>
+            </div>
+            <div class="pfcg-product-meta">
+              <span class="pfcg-meta-label">גודל אריזה:</span>
+              <span class="pfcg-meta-value">100 מ"ל</span>
+            </div>
+            <div class="pfcg-product-price">מחירון לקליניקות</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-order" target="_blank" rel="noopener">להזמנה בוואטסאפ</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+    <!-- Divider between subsections -->
+    <div class="pfcg-section-divider" aria-hidden="true">
+      <div class="pfcg-divider-line"></div>
+      <div class="pfcg-divider-text">לשימוש ביתי ומקצועי</div>
+      <div class="pfcg-divider-line"></div>
+    </div>
+
+    <!-- Sub-section 2: Equipment -->
+    <div class="pfcg-subsection">
+      <h3 class="pfcg-sub-title">מכשירים מקצועיים לטיפול ברגליים</h3>
+      <div class="pfcg-equipment-grid">
+
+        <!-- Equipment Card 1 -->
+        <article class="pfcg-equipment-card">
+          <div class="pfcg-equipment-img-wrap">
+            <img data-context="Professional electric nail drill and file machine for pedicure, clinical podiatry equipment in warm neutral tones, medical-grade rotary tool for nail treatment and callus removal" width="400" height="280" src="/assets/section-gallery-professional-foot-care-gallery-image-7.webp" alt="מכשיר פדיקור חשמלי מקצועי">
+          </div>
+          <div class="pfcg-equipment-body">
+            <h3 class="pfcg-equipment-title">מכשיר פדיקור חשמלי מקצועי</h3>
+            <p class="pfcg-equipment-use">שימוש עיקרי: עיצוב ציפורניים, הסרת קרניות ויבלות, ליטוש עדין</p>
+            <p class="pfcg-equipment-fit">התאמה מקצועית: מתאים לפדיקוריסטים שיקומיים, מרפאות כף רגל וקופות חולים</p>
+            <p class="pfcg-equipment-benefits">מהירות משתנה עד 35,000 סל"ד · ראשים מתחלפים לכל סוג טיפול · רעש נמוך ורטט מינימלי · מתאים לעבודה ממושכת</p>
+            <div class="pfcg-equipment-price">לפרטים ומחירים</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-equipment" target="_blank" rel="noopener">לפרטים בוואטסאפ</a>
+          </div>
+        </article>
+
+        <!-- Equipment Card 2 -->
+        <article class="pfcg-equipment-card">
+          <div class="pfcg-equipment-img-wrap">
+            <img data-context="Professional foot spa bath and soaking device with heated water circulation, clinical podiatry equipment, warm cream tones, therapeutic foot soak machine for rehabilitation" width="400" height="280" src="/assets/section-gallery-professional-foot-care-gallery-image-8.webp" alt="אמבט רגליים טיפולי עם חימום">
+          </div>
+          <div class="pfcg-equipment-body">
+            <h3 class="pfcg-equipment-title">אמבט רגליים טיפולי עם חימום</h3>
+            <p class="pfcg-equipment-use">שימוש עיקרי: ריכוך עור לפני טיפול, הרגעת כאבים, שיפור זרימת דם</p>
+            <p class="pfcg-equipment-fit">התאמה מקצועית: מרפאות שיקום, קליניקות פרטיות, בתי אבות</p>
+            <p class="pfcg-equipment-benefits">בקרת טמפרטורה מדויקת · עיסוי בועות · קל לניקוי ולחיטוי · עיצוב ארגונומי לנוחות מטופל</p>
+            <div class="pfcg-equipment-price">לפרטים ומחירים</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-equipment" target="_blank" rel="noopener">לפרטים בוואטסאפ</a>
+          </div>
+        </article>
+
+        <!-- Equipment Card 3 -->
+        <article class="pfcg-equipment-card">
+          <div class="pfcg-equipment-img-wrap">
+            <img data-context="Nail correction brace and orthotic device for ingrown toenails, clinical podiatry tool, medical grade nail splint on warm background, rehabilitative foot care equipment" width="400" height="280" src="/assets/section-gallery-professional-foot-care-gallery-image-9.webp" alt="מערכת סד לתיקון ציפורן חודרנית">
+          </div>
+          <div class="pfcg-equipment-body">
+            <h3 class="pfcg-equipment-title">מערכת סד לתיקון ציפורן חודרנית</h3>
+            <p class="pfcg-equipment-use">שימוש עיקרי: יישור ציפורן חודרנית ללא ניתוח, הפחתת כאב מיידית</p>
+            <p class="pfcg-equipment-fit">התאמה מקצועית: פדיקוריסטים שיקומיים בלבד — נדרש הכשרה מקצועית</p>
+            <p class="pfcg-equipment-benefits">טיפול שמרני ללא חיתוך · תוצאות נראות תוך 4–8 שבועות · מגוון גדלים · חומרים היפואלרגניים</p>
+            <div class="pfcg-equipment-price">לפרטים ומחירים</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-equipment" target="_blank" rel="noopener">לפרטים בוואטסאפ</a>
+          </div>
+        </article>
+
+        <!-- Equipment Card 4 -->
+        <article class="pfcg-equipment-card">
+          <div class="pfcg-equipment-img-wrap">
+            <img data-context="Professional UV sterilization box for pedicure tools, clinical medical sterilizer equipment, clean white and olive tones, podiatry hygiene equipment for tool disinfection" width="400" height="280" src="/assets/section-gallery-professional-foot-care-gallery-image-10.webp" alt="מכשיר עיקור UV לכלי עבודה">
+          </div>
+          <div class="pfcg-equipment-body">
+            <h3 class="pfcg-equipment-title">מכשיר עיקור UV לכלי עבודה</h3>
+            <p class="pfcg-equipment-use">שימוש עיקרי: חיטוי ועיקור כלי פדיקור בין מטופל למטופל</p>
+            <p class="pfcg-equipment-fit">התאמה מקצועית: חובה בכל קליניקה מקצועית לפי תקני הבריאות</p>
+            <p class="pfcg-equipment-benefits">מחזור עיקור מלא ב-3 דקות · מסך תצוגה דיגיטלי · נפח גדול לכל הכלים · עמידה בתקנות משרד הבריאות</p>
+            <div class="pfcg-equipment-price">לפרטים ומחירים</div>
+            <a href="https://wa.me/[whatsapp_handle]" class="pfcg-btn-equipment" target="_blank" rel="noopener">לפרטים בוואטסאפ</a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="professional-foot-care-benefits-section" data-layout-spec="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל-benefits" dir="rtl">
+  <div class="pfcb-container">
+    <div class="pfcb-grid">
+
+      <!-- Main Column -->
+      <div class="pfcb-main-col">
+        <div class="pfcb-heading-block">
+          <h2 class="pfcb-heading">למה לבחור במשה לטיפול בכף הרגל?</h2>
+          <div class="pfcb-heading-rule" aria-hidden="true"></div>
+          <p class="pfcb-intro">משה מביא עמו שנות ניסיון בפדיקור שיקומי וטיפולי, תוך שימוש במוצרים מקצועיים ומתודולוגיה המשלבת ידע קליני עם גישה אישית, חמה ומכבדת. הטיפול אצלנו אינו רק קוסמטי — זוהי השקעה אמיתית בבריאות ורווחת כף הרגל.</p>
+        </div>
+
+        <ul class="pfcb-benefits-list" role="list">
+          <li class="pfcb-benefit-item">
+            <div class="pfcb-benefit-icon" aria-hidden="true">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 2C8.5 2 6 4 5.5 7C5 10 6 12 7 13.5C8 15 8.5 18 11 19C13.5 18 14 15 15 13.5C16 12 17 10 16.5 7C16 4 13.5 2 11 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <circle cx="9" cy="8" r="1" fill="currentColor"></circle>
+                <circle cx="13" cy="8" r="1" fill="currentColor"></circle>
+                <circle cx="11" cy="6" r="1" fill="currentColor"></circle>
+                <circle cx="8" cy="10.5" r="0.8" fill="currentColor"></circle>
+                <circle cx="14" cy="10.5" r="0.8" fill="currentColor"></circle>
+              </svg>
+            </div>
+            <div class="pfcb-benefit-content">
+              <span class="pfcb-benefit-title">ניסיון מעשי בטיפול בכף הרגל</span>
+              <span class="pfcb-benefit-desc">שנות עבודה קלינית עם מגוון רחב של מצבים — מציפורניים עקומות ועד טיפול שיקומי לאחר פציעה.</span>
+            </div>
+          </li>
+
+          <li class="pfcb-benefit-item">
+            <div class="pfcb-benefit-icon" aria-hidden="true">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="6" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.5"></rect>
+                <path d="M7 6V5C7 3.9 7.9 3 9 3H13C14.1 3 15 3.9 15 5V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                <path d="M11 11V13M9 12H13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+              </svg>
+            </div>
+            <div class="pfcb-benefit-content">
+              <span class="pfcb-benefit-title">מוצרים מותאמים לעבודת קליניקה</span>
+              <span class="pfcb-benefit-desc">שימוש בתכשירים מקצועיים בלבד — נבחרים בקפידה לאיכות, בטיחות ויעילות קלינית מוכחת.</span>
+            </div>
+          </li>
+
+          <li class="pfcb-benefit-item">
+            <div class="pfcb-benefit-icon" aria-hidden="true">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 14C4 14 5 13 8 13C11 13 13 15 16 15C19 15 20 14 20 14V4C20 4 19 5 16 5C13 5 11 3 8 3C5 3 4 4 4 4V14Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M4 19V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+              </svg>
+            </div>
+            <div class="pfcb-benefit-content">
+              <span class="pfcb-benefit-title">פתרונות ליובש, סדקים, עור קשה ופטרת</span>
+              <span class="pfcb-benefit-desc">טיפול ממוקד בבעיות נפוצות — עם פרוטוקולים מותאמים אישית לכל מטופל ומצב.</span>
+            </div>
+          </li>
+
+          <li class="pfcb-benefit-item">
+            <div class="pfcb-benefit-icon" aria-hidden="true">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 7H19M3 11H15M3 15H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+                <circle cx="17" cy="15" r="3" stroke="currentColor" stroke-width="1.5"></circle>
+                <path d="M16 15L17 16L19 14" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <div class="pfcb-benefit-content">
+              <span class="pfcb-benefit-title">אפשרות לדוגמיות ובדיקת מוצרים</span>
+              <span class="pfcb-benefit-desc">לפני שמחליטים — ניתן לקבל דוגמיות מוצרים נבחרים ולהתנסות בפועל ללא התחייבות.</span>
+            </div>
+          </li>
+
+          <li class="pfcb-benefit-item">
+            <div class="pfcb-benefit-icon" aria-hidden="true">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 4H18C19.1 4 20 4.9 20 6V14C20 15.1 19.1 16 18 16H7L3 20V6C3 4.9 3.9 4 4 4Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+                <path d="M8 9H14M8 12H11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"></path>
+              </svg>
+            </div>
+            <div class="pfcb-benefit-content">
+              <span class="pfcb-benefit-title">שירות אישי ונגיש בוואטסאפ</span>
+              <span class="pfcb-benefit-desc">תיאום תורים, שאלות מקצועיות ומענה חם — ישירות בהודעה, בלי המתנות ובלי בירוקרטיה.</span>
+            </div>
+          </li>
+
+          <li class="pfcb-benefit-item">
+            <div class="pfcb-benefit-icon" aria-hidden="true">
+              <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 3L13.5 8.5L19.5 9.3L15.3 13.4L16.4 19.5L11 16.5L5.6 19.5L6.7 13.4L2.5 9.3L8.5 8.5L11 3Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </div>
+            <div class="pfcb-benefit-content">
+              <span class="pfcb-benefit-title">בהשראת רפואת הרמב"ם</span>
+              <span class="pfcb-benefit-desc">גישה הוליסטית המשלבת חכמת הרפואה המסורתית עם ידע מודרני — לטיפול שמכבד את האדם כולו.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Clinic Panel Column -->
+      <div class="pfcb-panel-col">
+        <div class="pfcb-clinic-panel">
+          <div class="pfcb-panel-icon-wrap" aria-hidden="true">
+            <svg data-element-type="icon" data-icon-type="svg" width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="44" height="44" rx="12" fill="var(--primary)" fill-opacity="0.1"></rect>
+              <path d="M22 8C17 8 13 12.5 12 17C11 21.5 12.5 25 14.5 27.5C16 29.5 17 34 22 36C27 34 28 29.5 29.5 27.5C31.5 25 33 21.5 32 17C31 12.5 27 8 22 8Z" stroke="var(--primary)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+              <circle cx="19" cy="18" r="1.5" fill="var(--primary)"></circle>
+              <circle cx="25" cy="18" r="1.5" fill="var(--primary)"></circle>
+              <circle cx="22" cy="15" r="1.5" fill="var(--primary)"></circle>
+              <circle cx="17.5" cy="22" r="1.2" fill="var(--primary)"></circle>
+              <circle cx="26.5" cy="22" r="1.2" fill="var(--primary)"></circle>
+            </svg>
+          </div>
+          <h3 class="pfcb-panel-heading">פדיקוריסטית או בעלת קליניקה? זה בשבילך</h3>
+          <p class="pfcb-panel-text">אנו מציעים תכשירים מקצועיים ברמה הגבוהה ביותר, עם מחירון מיוחד לרכישה בכמות. אידיאלי לקליניקות פדיקור, מטפלות עצמאיות ובעלות עסקים בתחום הבריאות והטיפוח — כל זאת עם ליווי אישי ומקצועי לאורך הדרך.</p>
+
+          <ul class="pfcb-panel-features" role="list">
+            <li>
+              <svg data-element-type="icon" data-icon-type="svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8L6.5 11.5L13 4.5" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>מחירון מיוחד לרכישה בכמות</span>
+            </li>
+            <li>
+              <svg data-element-type="icon" data-icon-type="svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8L6.5 11.5L13 4.5" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>תכשירים מקצועיים מאושרים לשימוש קליני</span>
+            </li>
+            <li>
+              <svg data-element-type="icon" data-icon-type="svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8L6.5 11.5L13 4.5" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>ייעוץ מקצועי אישי ללא עלות</span>
+            </li>
+            <li>
+              <svg data-element-type="icon" data-icon-type="svg" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8L6.5 11.5L13 4.5" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+              <span>אפשרות לדוגמיות לפני הזמנה</span>
+            </li>
+          </ul>
+
+          <a href="#contact" class="pfcb-panel-cta">
+            <span>לקבלת מחירון מקצועי</span>
+            <svg data-element-type="icon" data-icon-type="svg" width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+              <path d="M14 9H4M8 5L4 9L8 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </a>
+
+          <div class="pfcb-panel-badge">
+            <svg data-element-type="icon" data-icon-type="svg" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <circle cx="7" cy="7" r="6" stroke="var(--accent)" stroke-width="1.2"></circle>
+              <path d="M4 7L6.5 9.5L10 5" stroke="var(--accent)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+            <span>מתאים לקליניקות, עצמאיות ורכישה מקצועית</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="professional-foot-care-testimonials-section" data-layout-spec="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל-testimonials" dir="rtl">
+  <div class="pfct-inner">
+    <div class="pfct-grid">
+
+      <!-- RIGHT COLUMN: Testimonials -->
+      <div class="pfct-col-testimonials">
+        <div class="pfct-col-header">
+          <h2 class="pfct-section-title">מה אומרים הלקוחות</h2>
+          <div class="pfct-title-rule" aria-hidden="true">
+            <svg data-no-icon-edit="true" aria-hidden="true" width="60" height="6" viewBox="0 0 60 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="0" y1="3" x2="60" y2="3" stroke="var(--accent)" stroke-width="1.5" stroke-opacity="0.6"></line>
+            </svg>
+          </div>
+        </div>
+
+        <div class="pfct-testimonials-grid">
+          <!-- Card 1 -->
+          <article class="pfct-card">
+            <div class="pfct-card-top">
+              <div class="pfct-stars" aria-label="דירוג 5 כוכבים">
+                <span aria-hidden="true">★★★★★</span>
+              </div>
+              <blockquote class="pfct-quote">
+                <p>"הגעתי עם ציפורן חודרת שסבלתי ממנה חודשים. משה טיפל בה בעדינות ובמקצועיות יוצאת דופן. כבר לאחר הביקור הראשון הרגשתי הקלה אמיתית. ממליצה בחום לכל מי שמתמודד עם בעיות כף הרגל."</p>
+              </blockquote>
+            </div>
+            <footer class="pfct-card-footer">
+              <div class="pfct-avatar" aria-hidden="true">ר.מ</div>
+              <div class="pfct-person">
+                <h3 class="pfct-person-name">ר. מזרחי</h3>
+                <small class="pfct-person-label">לקוחה קבועה, ירושלים</small>
+              </div>
+            </footer>
+          </article>
+
+          <!-- Card 2 -->
+          <article class="pfct-card">
+            <div class="pfct-card-top">
+              <div class="pfct-stars" aria-label="דירוג 5 כוכבים">
+                <span aria-hidden="true">★★★★★</span>
+              </div>
+              <blockquote class="pfct-quote">
+                <p>"כסוכרתי, חשוב לי שהטיפול יהיה בידיים מקצועיות ובטוחות. משה מבין את הצרכים המיוחדים שלי ומתאים את הטיפול בהתאם. אני סומך עליו לחלוטין ובא לטיפול כל חודש."</p>
+              </blockquote>
+            </div>
+            <footer class="pfct-card-footer">
+              <div class="pfct-avatar" aria-hidden="true">א.כ</div>
+              <div class="pfct-person">
+                <h3 class="pfct-person-name">א. כהן</h3>
+                <small class="pfct-person-label">לקוח קבוע, בני ברק</small>
+              </div>
+            </footer>
+          </article>
+
+          <!-- Card 3 - wide -->
+          <article class="pfct-card pfct-card-wide">
+            <div class="pfct-card-top">
+              <div class="pfct-stars" aria-label="דירוג 5 כוכבים">
+                <span aria-hidden="true">★★★★★</span>
+              </div>
+              <blockquote class="pfct-quote">
+                <p>"אחרי ניתוח ברגל חיפשתי מישהו שמבין בשיקום ולא רק בפדיקור קוסמטי. משה הוא בדיוק זה — הוא הסביר לי כל שלב, היה סבלני ועדין, והרגל שלי חזרה לתפקוד מלא הרבה יותר מהר ממה שציפיתי. שירות שהולך הרבה מעבר לציפיות."</p>
+              </blockquote>
+            </div>
+            <footer class="pfct-card-footer">
+              <div class="pfct-avatar" aria-hidden="true">ד.ל</div>
+              <div class="pfct-person">
+                <h3 class="pfct-person-name">ד. לוי</h3>
+                <small class="pfct-person-label">לקוח לאחר שיקום, תל אביב</small>
+              </div>
+            </footer>
+          </article>
+        </div>
+      </div>
+
+      <!-- LEFT COLUMN: FAQ -->
+      <div class="pfct-col-faq">
+        <div class="pfct-col-header">
+          <h2 class="pfct-section-title">שאלות ותשובות</h2>
+          <div class="pfct-title-rule" aria-hidden="true">
+            <svg data-no-icon-edit="true" aria-hidden="true" width="60" height="6" viewBox="0 0 60 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="0" y1="3" x2="60" y2="3" stroke="var(--accent)" stroke-width="1.5" stroke-opacity="0.6"></line>
+            </svg>
+          </div>
+        </div>
+
+        <div class="pfct-faq-list">
+
+          <div class="pfct-faq-item">
+            <div class="pfct-faq-q-row">
+              <span class="pfct-faq-icon" aria-hidden="true">
+                <svg data-element-type="icon" data-icon-type="svg" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.4"></circle>
+                  <path d="M10 6v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+                  <circle cx="10" cy="14" r="0.8" fill="currentColor"></circle>
+                </svg>
+              </span>
+              <h3 class="pfct-faq-q">האם הטיפול מתאים גם לאנשים עם סוכרת?</h3>
+            </div>
+            <p class="pfct-faq-a">כן. הטיפול השיקומי של משה מותאם במיוחד לאנשים עם סוכרת, כולל שימוש בכלים מעוקרים, בדיקת רגישות ויצירת פרוטוקול טיפול אישי. הבטיחות היא עדיפות עליונה.</p>
+          </div>
+
+          <div class="pfct-faq-item">
+            <div class="pfct-faq-q-row">
+              <span class="pfct-faq-icon" aria-hidden="true">
+                <svg data-element-type="icon" data-icon-type="svg" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.4"></circle>
+                  <path d="M10 6v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+                  <circle cx="10" cy="14" r="0.8" fill="currentColor"></circle>
+                </svg>
+              </span>
+              <h3 class="pfct-faq-q">האם יש מחיר מיוחד לפדיקוריסטיות?</h3>
+            </div>
+            <p class="pfct-faq-a">כן, ישנן הנחות מקצועיות לפדיקוריסטיות המעוניינות ברענון ידע, השתלמות, או רכישת ציוד. ניתן לפנות ישירות לקבלת פרטים אישיים.</p>
+          </div>
+
+          <div class="pfct-faq-item">
+            <div class="pfct-faq-q-row">
+              <span class="pfct-faq-icon" aria-hidden="true">
+                <svg data-element-type="icon" data-icon-type="svg" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.4"></circle>
+                  <path d="M10 6v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+                  <circle cx="10" cy="14" r="0.8" fill="currentColor"></circle>
+                </svg>
+              </span>
+              <h3 class="pfct-faq-q">האם ניתן לקבל דוגמית לפני רכישה?</h3>
+            </div>
+            <p class="pfct-faq-a">בהחלט. ניתן לבקש דוגמית של מוצרי הטיפול שבשימוש. אנו מאמינים שחוויה ישירה עם המוצר חשובה יותר מכל הסבר.</p>
+          </div>
+
+          <div class="pfct-faq-item">
+            <div class="pfct-faq-q-row">
+              <span class="pfct-faq-icon" aria-hidden="true">
+                <svg data-element-type="icon" data-icon-type="svg" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.4"></circle>
+                  <path d="M10 6v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+                  <circle cx="10" cy="14" r="0.8" fill="currentColor"></circle>
+                </svg>
+              </span>
+              <h3 class="pfct-faq-q">האם יש אפשרות משלוח לכל הארץ?</h3>
+            </div>
+            <p class="pfct-faq-a">כן, אנו שולחים ציוד ומוצרי טיפול לכל רחבי הארץ. זמני המשלוח ועלויות המשלוח תלויים ביעד ובנפח ההזמנה. צרו קשר לפרטים.</p>
+          </div>
+
+          <div class="pfct-faq-item pfct-faq-item-last">
+            <div class="pfct-faq-q-row">
+              <span class="pfct-faq-icon" aria-hidden="true">
+                <svg data-element-type="icon" data-icon-type="svg" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.4"></circle>
+                  <path d="M10 6v5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"></path>
+                  <circle cx="10" cy="14" r="0.8" fill="currentColor"></circle>
+                </svg>
+              </span>
+              <h3 class="pfct-faq-q">האם אפשר להתייעץ לפני רכישה או קביעת תור?</h3>
+            </div>
+            <p class="pfct-faq-a">כמובן. ניתן לפנות בכל שאלה לפני קביעת תור — בטלפון, בוואטסאפ, או בדוא"ל. משה ישמח לענות באופן אישי ולהתאים את הטיפול לצרכים הספציפיים שלך.</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom transition divider -->
+  <div class="pfct-divider-wrapper">
+    <svg data-no-icon-edit="true" aria-hidden="true" viewBox="0 0 1200 70" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,70 L0,38 Q100,28 200,36 T400,32 Q500,28 600,34 T800,30 Q900,26 1000,34 T1200,30 L1200,70 Z" fill="var(--bg-light)"></path>
+    </svg>
+  </div>
+
+</section>
+
+<section class="professional-foot-care-cta-section" data-layout-spec="משה – פדיקור שיקומי וטיפול מקצועי בכף הרגל-cta" dir="rtl">
+  <div class="pfcc-container">
+    <div class="pfcc-panel">
+      <!-- Corner decorations -->
+      <span class="pfcc-corner pfcc-corner--tr" aria-hidden="true"></span>
+      <span class="pfcc-corner pfcc-corner--tl" aria-hidden="true"></span>
+      <span class="pfcc-corner pfcc-corner--br" aria-hidden="true"></span>
+      <span class="pfcc-corner pfcc-corner--bl" aria-hidden="true"></span>
+
+      <!-- Leaf ornament -->
+      <div class="pfcc-ornament" aria-hidden="true">
+        <svg data-no-icon-edit="true" aria-hidden="true" width="72" height="36" viewBox="0 0 72 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M36 32 C36 32 20 24 16 14 C12 4 22 2 28 8 C30 10 33 16 36 20" stroke="#B89A63" stroke-width="1.4" fill="none" opacity="0.65"></path>
+          <path d="M36 32 C36 32 52 24 56 14 C60 4 50 2 44 8 C42 10 39 16 36 20" stroke="#B89A63" stroke-width="1.4" fill="none" opacity="0.65"></path>
+          <line x1="36" y1="32" x2="36" y2="20" stroke="#B89A63" stroke-width="1.2" opacity="0.55"></line>
+        </svg>
+      </div>
+
+      <!-- Heading -->
+      <h2 class="pfcc-heading">מוכנים לטיפול שמתחשב בכם?</h2>
+
+      <!-- Separator line -->
+      <div class="pfcc-rule" aria-hidden="true"></div>
+
+      <!-- Supporting text -->
+      <p class="pfcc-body">פדיקור שיקומי מקצועי עבור לקוחות פרטיים, פדיקוריסטיות וקליניקות.<br class="pfcc-br"> פנו אלינו לייעוץ אישי, מחירון מפורט, או לקבלת דוגמיות — בהתאם לצורך שלכם.</p>
+
+      <!-- CTA button -->
+      <div class="pfcc-cta-block">
+        <a href="https://wa.me/972585553431" class="pfcc-btn-whatsapp" target="_blank" rel="noopener noreferrer">
+          <svg data-element-type="icon" data-icon-type="svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="flex-shrink:0;">
+            <path d="M20.52 3.48A11.93 11.93 0 0 0 12 0C5.37 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.22-1.57A11.95 11.95 0 0 0 12 24c6.63 0 12-5.37 12-12 0-3.21-1.25-6.22-3.48-8.52zM12 22c-1.85 0-3.66-.5-5.24-1.44l-.37-.22-3.9.98 1.02-3.77-.24-.38A9.93 9.93 0 0 1 2 12c0-5.51 4.49-10 10-10s10 4.49 10 10-4.49 10-10 10zm5.44-7.42c-.3-.15-1.77-.87-2.04-.97-.28-.1-.48-.15-.68.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.47-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.44-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.68-1.63-.93-2.23-.24-.58-.49-.5-.68-.51h-.58c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.47s1.06 2.87 1.21 3.07c.15.2 2.09 3.19 5.07 4.35.71.31 1.26.49 1.69.63.71.22 1.35.19 1.86.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.12-.27-.2-.57-.35z"></path>
+          </svg>
+          וואטסאפ: 058-555-3431
+        </a>
+
+        <p class="pfcc-sub">לקבלת ייעוץ, מחירון או דוגמיות בהתאם לצורך</p>
+      </div>
+
+      <!-- Audience info bar -->
+      <div class="pfcc-audience-bar">
+        <span class="pfcc-audience-item">
+          <svg data-element-type="icon" data-icon-type="svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          לקוחות פרטיים
+        </span>
+        <span class="pfcc-audience-dot" aria-hidden="true">·</span>
+        <span class="pfcc-audience-item">
+          <svg data-element-type="icon" data-icon-type="svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"></path><circle cx="12" cy="9" r="2.5"></circle>
+          </svg>
+          פדיקוריסטיות
+        </span>
+        <span class="pfcc-audience-dot" aria-hidden="true">·</span>
+        <span class="pfcc-audience-item">
+          <svg data-element-type="icon" data-icon-type="svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="3"></rect><path d="M8 12h8M12 8v8"></path>
+          </svg>
+          קליניקות ומרפאות
+        </span>
+      </div>
+
+    </div>
+  </div>
+</section></main>
+  
+  <footer class="site-footer" dir="rtl">
+  <div class="footer-main">
+    <div class="footer-container">
+      <div class="footer-grid">
+
+        <!-- Column 1: Company Info -->
+        <div class="footer-col footer-col--brand">
+          <div class="footer-logo-wrap">
+            <img src="/assets/logo.webp" alt="משה - פדיקוריסט שיקומי " class="logo" data-element-type="image" data-element-id="img-1779030133409-29r9qaylj" data-zappy-footer-image="true">
+          </div>
+          <p class="footer-tagline">טיפול מקצועי ומחזיר כבוד לכפות הרגליים שלך. בגישה חמה, סבלנית ומותאמת אישית.</p>
+          <div class="footer-social">
+            
+            
+            
+          </div>
+        </div>
+
+        <!-- Column 2: Quick Links -->
+        <div class="footer-col">
+          <h3 class="footer-heading">
+            <span class="footer-heading-line"></span>
+            ניווט מהיר
+          </h3>
+          <ul class="footer-nav">
+            <li><a href="/">בית</a></li>
+            <li><a href="/services">שירותים</a></li>
+            <li><a href="/about">אודות</a></li>
+            <li><a href="/contact">צור קשר</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Contact Info -->
+        <div class="footer-col">
+          <h3 class="footer-heading">
+            <span class="footer-heading-line"></span>
+            יצירת קשר
+          </h3>
+          <ul class="footer-contact" ><li>
+              <span class="contact-icon"><i class="fas fa-envelope" data-element-type="icon" data-element-id="icon-1779030133408-9ovbd7y44" data-icon-type="fontawesome" style="cursor: pointer;"></i></span>
+              <span class="contact-text"><a href="mailto:lr12345@013net.net">lr12345@013net.net</a></span>
+            </li><li>
+              <span class="contact-icon"><i class="fas fa-phone" data-element-type="icon" data-element-id="icon-1779030133408-wdnuq9qd6" data-icon-type="fontawesome" style="cursor: pointer;"></i></span>
+              <span class="contact-text"><a href="tel:058-5553431">058-5553431</a></span>
+            </li><li>
+              <span class="contact-icon"><i class="fab fa-whatsapp zappy-native-element" data-element-type="icon" data-element-id="native-icon-1779030253070-i51zkry2f" style="cursor: pointer;"></i></span>
+              <span class="contact-text"><a href="https://wa.me/972585553431" target="_blank" rel="noopener noreferrer">וואטסאפ</a></span>
+            </li><li><a href="/" style="display:flex;align-items:flex-start;gap:inherit"><span class="contact-icon"><i class="fas fa-map-marker-alt" style="cursor: pointer;"></i></span>
+              <span class="contact-text">יאטקובסקי אחים 36, פתח תקווה, מרכז, 4965239, ישראל</span></a></li></ul>
+        </div>
+
+        <!-- Column 4: Hours / Extra -->
+        <div class="footer-col">
+          <h3 class="footer-heading">
+            <span class="footer-heading-line"></span>
+            שעות פעילות
+          </h3>
+          <ul class="footer-hours">
+            <li><a href="/"><span class="hours-day">ראשון – חמישי</span><span class="hours-time">09:00 – 19:00</span></a></li>
+            <li><a href="/"><span class="hours-day">שישי</span><span class="hours-time">09:00 – 14:00</span></a></li>
+            <li><a href="/"><span class="hours-day">שבת</span><span class="hours-time">סגור</span></a></li>
+          </ul>
+          <p class="zappy-editable"><a href="/contact" class="footer-cta-btn" data-element-type="button" data-element-id="btn-1779030133406-3nhcljo3f" data-native-element="true">קבע תור עכשיו</a>
+        </p></div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="footer-bottom">
+    <div class="footer-container">
+      <div class="footer-bottom-inner">
+        <p class="footer-copyright">© 2026 משה - פדיקוריסט שיקומי . כל הזכויות שמורות.</p>
+        <div class="footer-legal">
+          <a href="/privacy">מדיניות פרטיות</a>
+          <span class="footer-legal-sep">|</span>
+          <a href="/terms">תנאי שימוש</a>
+          <span class="footer-legal-sep">|</span>
+          <a href="/accessibility">נגישות</a>
+          <span class="footer-legal-sep">|</span>
+          <a href="https://zappy5.com" target="_blank" class="zappy-attribution">נוצר באמצעות Zappy</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+  
+  
+  
+  <div data-integration="accessibility:toolbar"></div>
+  <a href="https://wa.me/972585553431" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg></a>
+
+    <script src="/script.js"></script>
+
+    <script id="zappy-mobile-submenu-script">
+    (function() {
+      function initMobileSubmenuToggles() {
+        if (window.innerWidth > 768) {
+          document.querySelectorAll('.mobile-submenu-toggle').forEach(function(btn) { btn.remove(); });
+          document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) { menu.classList.remove('mobile-expanded'); });
+          return;
+        }
+        var items = document.querySelectorAll('.nav-menu li:has(.sub-menu), nav li:has(.sub-menu), .navbar li:has(.sub-menu), #navMenu li:has(.sub-menu)');
+        items.forEach(function(li) {
+          if (li.querySelector('.mobile-submenu-toggle')) return;
+          var submenu = li.querySelector('.sub-menu');
+          var parentLink = li.querySelector(':scope > a');
+          if (!submenu || !parentLink) return;
+          var toggleBtn = document.createElement('button');
+          toggleBtn.className = 'mobile-submenu-toggle';
+          toggleBtn.setAttribute('aria-label', 'Toggle submenu');
+          toggleBtn.setAttribute('type', 'button');
+          parentLink.insertAdjacentElement('afterend', toggleBtn);
+          toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            document.querySelectorAll('.sub-menu.mobile-expanded').forEach(function(menu) {
+              if (menu !== submenu) { menu.classList.remove('mobile-expanded'); var t = menu.parentElement.querySelector('.mobile-submenu-toggle'); if(t) t.classList.remove('expanded'); }
+            });
+            submenu.classList.toggle('mobile-expanded');
+            toggleBtn.classList.toggle('expanded');
+          });
+        });
+      }
+      if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initMobileSubmenuToggles); }
+      else { initMobileSubmenuToggles(); }
+      var resizeTimer; window.addEventListener('resize', function() { clearTimeout(resizeTimer); resizeTimer = setTimeout(initMobileSubmenuToggles, 250); });
+      // Re-initialize when mobile menu becomes visible (MutationObserver)
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.type === 'attributes') {
+            var target = mutation.target;
+            if (target.classList && (target.classList.contains('active') || target.classList.contains('open'))) {
+              setTimeout(initMobileSubmenuToggles, 100);
+            }
+          }
+        });
+      });
+      setTimeout(function() {
+        document.querySelectorAll('.mobile-menu, .nav-menu, #navMenu, nav').forEach(function(menu) {
+          observer.observe(menu, { attributes: true, attributeFilter: ['class', 'style'] });
+        });
+      }, 500);
+    })();
+    </script>
+</body>
+</html>
