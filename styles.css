@@ -7697,6 +7697,11 @@ div[id*="mic-access-tool-box"] button[class*="reset"] * {
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
+
+.about-story-section .about-story-value-item:nth-child(2) .about-story-value-icon svg {
+  color: var(--primary-color);
+  stroke: var(--primary-color);
+}
 /* mobile-submenu-overflow-fix */
 @media (max-width: 768px) {
   .navbar .sub-menu.mobile-expanded,
