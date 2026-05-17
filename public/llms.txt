@@ -1,4 +1,4 @@
-# פדיקוריסט שיקומי — Generative Engine Optimization Map
+# משה - פדיקוריסט שיקומי  — Generative Engine Optimization Map
 
 > A rehabilitative pedicure business focused on therapeutic and medical foot care. The brand likely combines clinical expertise with personal care, addressing foot health issues beyond cosmetic treatment — such as nail problems, calluses, diabetic foot care, or post-injury recovery. The business positions itself at the intersection of health, wellness, and professional foot therapy.
 
@@ -40,7 +40,10 @@ Information about WCAG compliance and accessibility features.
 
 ## How to Contact Us
 
-- (No contact details configured yet.)
+- Email: lr12345@013net.net
+- Phone: 058-5553431
+- Phone (tel): tel:0585553431
+- Address: יאטקובסקי אחים 36, פתח תקווה, 4965239, ישראל
 
 ### Contact form
 - URL: https://moshe-pedicure.com/contact
@@ -58,7 +61,7 @@ Information about WCAG compliance and accessibility features.
 
 # Business Context (for LLM understanding)
 
-## About פדיקוריסט שיקומי
+## About משה - פדיקוריסט שיקומי 
 A rehabilitative pedicure business focused on therapeutic and medical foot care. The brand likely combines clinical expertise with personal care, addressing foot health issues beyond cosmetic treatment — such as nail problems, calluses, diabetic foot care, or post-injury recovery. The business positions itself at the intersection of health, wellness, and professional foot therapy.
 
 ## Services/Products
