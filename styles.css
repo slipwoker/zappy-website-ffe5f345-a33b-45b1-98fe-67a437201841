@@ -2909,9 +2909,12 @@ html[dir="rtl"] .footer-contact li > a { flex-direction: row !important; }
   }
 }
 /* ZAPPY_POSTGEN_GUARD_HERO_FONT_CAP:index-hero */
-.hero h1, .hero-section h1, [class*="hero-"] h1, [class~="hero"] h1, .hero .hero-title, .hero-title { font-size: min(var(--display-xl, 6rem), 6rem) !important; line-height: var(--leading-display, 1.05); }
+.hero h1, .hero-section h1, [class*="hero-"] h1, [class~="hero"] h1, .hero .hero-title, .hero-title { font-size: 48px !important; line-height: 1.2 !important; }
+@media (max-width: 1024px) {
+  .hero h1, .hero-section h1, [class*="hero-"] h1, [class~="hero"] h1, .hero .hero-title, .hero-title { font-size: 36px !important; }
+}
 @media (max-width: 768px) {
-  .hero h1, .hero-section h1, [class*="hero-"] h1, [class~="hero"] h1, .hero .hero-title, .hero-title { font-size: clamp(2rem, 9vw, 3rem) !important; }
+  .hero h1, .hero-section h1, [class*="hero-"] h1, [class~="hero"] h1, .hero .hero-title, .hero-title { font-size: 28px !important; }
 }
 
 /* ZAPPY_POSTGEN_GUARD_HERO_TYPO:בית-hero (index-hero) — stripped 1 jarring hero headline effect(s) */
@@ -8087,14 +8090,22 @@ nav .sub-menu.zappy-empty-submenu,
 
   /* The zoom wrapper's image is position:absolute (so it contributes 0 to the
      wrapper's intrinsic content width). Inserted-element parents that carry a
-     desktop pixel height (e.g. height:234px) collapse to 0px wide on mobile
-     because nothing in the subtree pushes back on the cross-axis. Force them
-     to fill the parent container so the wrapper's aspect-ratio chain resolves. */
+     desktop pixel height can either collapse to 0px wide or preserve a stale
+     desktop height after their child wrapper shrinks on mobile. Force them
+     to fill the parent container and let the wrapper's aspect-ratio determine
+     the real height, eliminating empty space before following text. */
   .zappy-inserted-element:has(> [data-zappy-zoom-wrapper="true"]) {
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  .zappy-inserted-element:has(> [data-zappy-zoom-wrapper="true"]) > [data-zappy-zoom-wrapper="true"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
   }
 
   /* Reset zoom wrapper images on mobile to responsive display.
@@ -8594,7 +8605,7 @@ html[dir="ltr"] .service-detail.service-reverse .service-detail-content { order:
 
 
 /* ZAPPY_MOBILE_NAV_ICON_ALIGNMENT_FIX */
-/* ZAPPY_MOBILE_NAV_ICON_ALIGNMENT_FIX_V2 */
+/* ZAPPY_MOBILE_NAV_ICON_ALIGNMENT_FIX_V3 */
 /* The mobile hamburger / phone buttons are absolutely positioned. Keep the
    navbar itself as a non-collapsing containing block so auto-margin centering
    stays aligned even when generated mobile CSS moves every nav child out of flow. */
@@ -8602,6 +8613,41 @@ html[dir="ltr"] .service-detail.service-reverse .service-detail-content { order:
   .navbar,
   nav.navbar {
     min-height: 70px !important;
+  }
+
+  /* Some generated RTL nav CSS sets both left:50% and right:50% on the
+     absolute .nav-brand. That collapses it to 0px wide, so the logo flows
+     left from the center instead of being centered on it. */
+  .navbar .nav-brand,
+  nav.navbar .nav-brand,
+  html[dir="rtl"] .navbar .nav-brand,
+  html[dir="rtl"] nav.navbar .nav-brand,
+  html[lang="he"] .navbar .nav-brand,
+  html[lang="he"] nav.navbar .nav-brand,
+  html[lang="ar"] .navbar .nav-brand,
+  html[lang="ar"] nav.navbar .nav-brand {
+    position: absolute !important;
+    left: 50% !important;
+    right: auto !important;
+    top: 50% !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: calc(100% - 168px) !important;
+    transform: translate(-50%, -50%) !important;
+    margin: 0 !important;
+    text-align: center !important;
+    justify-content: center !important;
+  }
+
+  .navbar .nav-brand .logo-link,
+  nav.navbar .nav-brand .logo-link,
+  .navbar .nav-brand a,
+  nav.navbar .nav-brand a {
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
   .navbar > .mobile-toggle,
