@@ -2646,18 +2646,16 @@ html[dir="rtl"] .footer-contact li > a { flex-direction: row !important; }
   display: block;
 }
 
-/* Scrim Overlay — fills from bottom-right toward top-left for RTL hero card placement */
 .index-hero-section .index-hero-scrim {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background-image:
-    linear-gradient(
+  background-image: linear-gradient(
       to left bottom,
-      rgba(43, 41, 38, 0.88) 0%,
-      rgba(43, 41, 38, 0.72) 45%,
-      rgba(43, 41, 38, 0.30) 100%
+      rgba(43, 41, 38, 0.55) 0%,
+      rgba(43, 41, 38, 0.40) 45%,
+      rgba(43, 41, 38, 0.10) 100%
     );
 }
 
