@@ -4412,10 +4412,10 @@ function fixContrast(){
 })();
 
 
-/* ZAPPY_ECOM_LANGUAGE_ROUTING_RUNTIME_V16 */
+/* ZAPPY_ECOM_LANGUAGE_ROUTING_RUNTIME_V17 */
 (function() {
-  if (window.__zappyEcomLanguageRoutingRuntime >= 16) return;
-  window.__zappyEcomLanguageRoutingRuntime = 16;
+  if (window.__zappyEcomLanguageRoutingRuntime >= 17) return;
+  window.__zappyEcomLanguageRoutingRuntime = 17;
 
   // Routing strategy: use path-based language URLs for ALL storefront pages
   // (including dynamic /product/:slug and /category/:slug). The publish
@@ -4520,10 +4520,11 @@ function fixContrast(){
   }
 
   function getDefaultLang() {
-    // The default language is whatever owns the path-prefix-free routes. We
-    // pin to 'he' here for the legacy Hebrew-source sites; future-proof by
-    // overriding via window.__zappyDefaultLang from the generated bundle.
-    return window.__zappyDefaultLang || 'he';
+    // Must mirror getBakedDefaultLang() so buildPath() agrees with the
+    // zappyAdditionalDefaultLanguage / zappyEcomDefaultLanguage baked at
+    // generation time. A hardcoded 'he' fallback here caused English-only
+    // sites (post language removal) to rewrite /products → /en/products.
+    return getBakedDefaultLang();
   }
 
   function buildPath(path) {
